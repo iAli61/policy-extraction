@@ -1,0 +1,7 @@
+markdown
+transformers
+faiss-cpu
+azure-search-documents
+markdown2
+numpy
+pandas

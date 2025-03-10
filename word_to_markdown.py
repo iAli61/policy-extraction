@@ -23,15 +23,20 @@ try:
     import mammoth
     from bs4 import BeautifulSoup
     import markdownify
+    import markdown  # For HTML preview generation
 except ImportError:
     print("Installing required dependencies...")
     import subprocess
     subprocess.check_call([sys.executable, "-m", "pip", "install", 
-                          "python-docx", "mammoth", "beautifulsoup4", "markdownify"])
+                          "python-docx", "mammoth", "beautifulsoup4", "markdownify", "markdown"])
     import docx
     import mammoth
     from bs4 import BeautifulSoup
     import markdownify
+    try:
+        import markdown
+    except ImportError:
+        print("Warning: Could not import markdown module for preview generation")
 
 class WordToMarkdownConverter:
     """Converts Word documents to Markdown with layout preservation."""
@@ -78,7 +83,7 @@ class WordToMarkdownConverter:
             
             # Merge adjacent tables that appear to be continuations
             next_sibling = table.find_next_sibling()
-            if next_sibling and next_sibling.name == 'table':
+            if (next_sibling and next_sibling.name == 'table'):
                 # Check if this might be a continuation (rough heuristic)
                 if len(table.find_all('tr')) < 20:  # Not already a very large table
                     # Move all rows from the next table into this one
@@ -106,9 +111,16 @@ class WordToMarkdownConverter:
                 img['alt'] = "Image"
             
             # Ensure src is properly formatted
-            if img.get('src') and not img['src'].startswith(('http', 'https', '/')):
+            if img.get('src'):
                 # For relative paths, ensure they're formatted correctly
                 img['src'] = img['src'].replace('\\', '/')
+                
+                # Add a class to make images more visible in Markdown
+                img['class'] = img.get('class', []) + ['markdown-image']
+                
+                # If width/height not specified, add reasonable defaults
+                if not img.get('width') and not img.get('height'):
+                    img['style'] = img.get('style', '') + '; max-width: 100%; height: auto;'
         
         # Remove empty paragraphs that might cause breaks in tables
         for p in soup.find_all('p'):
@@ -118,11 +130,12 @@ class WordToMarkdownConverter:
         html_content = str(soup)
         
         converter = markdownify.MarkdownConverter(
-            heading_style="atx",  # Use # style headings
-            bullets="-",          # Use - for unordered lists
-            strip=["script", "style"],
+            heading_style="atx",    # Use # style headings
+            bullets="-",            # Use - for unordered lists
+            strip=["script"],       # Don't strip style tags to keep image styling
             escape_asterisks=False,
-            escape_underscores=False
+            escape_underscores=False,
+            wrap=0                  # Don't wrap lines (helps with image formatting)
         )
         
         markdown = converter.convert(html_content)
@@ -194,13 +207,17 @@ class WordToMarkdownConverter:
         images_dir = output_path.parent / "images"
         os.makedirs(images_dir, exist_ok=True)
         
+        # Store image paths for post-processing
+        image_map = {}
+        
         # Image handler for mammoth
         def handle_image(image):
             with image.open() as image_data:
                 content_bytes = image_data.read()
                 
             # Generate a unique filename for the image
-            image_filename = f"image_{hash(content_bytes) % 10000}.{image.content_type.split('/')[-1]}"
+            image_content_type = image.content_type.split('/')[-1] if image.content_type else 'png'
+            image_filename = f"image_{abs(hash(str(content_bytes[:100]))) % 10000}.{image_content_type}"
             image_path = images_dir / image_filename
             
             # Save the image
@@ -209,11 +226,14 @@ class WordToMarkdownConverter:
                 
             print(f"Saved image: {image_path}")
             
-            # Return the image reference for the markdown
-            return {
-                "src": f"images/{image_filename}",
-                "alt_text": image.alt_text or "Image"
-            }
+            # Calculate relative path from markdown file to image
+            rel_path = f"images/{image_filename}"  # Use simpler, more reliable relative path
+            
+            # Store for post-processing
+            alt_text = image.alt_text or f"Image-{image_filename}"
+            image_map[alt_text] = rel_path
+            
+            return {"src": rel_path, "alt": alt_text}
         
         # Options for the conversion
         options = {
@@ -222,10 +242,7 @@ class WordToMarkdownConverter:
         
         # Add image handling if requested
         if self.preserve_images:
-            options["convert_image"] = mammoth.images.img_element(lambda image: {
-                "src": handle_image(image)["src"],
-                "alt": handle_image(image)["alt_text"]
-            })
+            options["convert_image"] = mammoth.images.img_element(handle_image)
         
         # Convert Word to HTML using mammoth
         with open(input_path, "rb") as docx_file:
@@ -243,11 +260,62 @@ class WordToMarkdownConverter:
         # Convert HTML to Markdown
         markdown = self._html_to_markdown(html)
         
+        # Post-process markdown to fix any broken image references
+        for alt_text, img_path in image_map.items():
+            # Fix plain text image references that weren't properly converted
+            if alt_text in markdown and f"![{alt_text}]({img_path})" not in markdown:
+                markdown = markdown.replace(alt_text, f"![{alt_text}]({img_path})")
+        
+        # Add some CSS for better image display in Markdown
+        markdown_with_css = f"""
+<!-- Styles for better image display -->
+<style>
+img.markdown-image {{
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 20px 0;
+  border-radius: 5px;
+}}
+</style>
+
+{markdown}
+"""
+        
         # Write the Markdown content to the output file
         with open(output_path, "w", encoding="utf-8") as md_file:
-            md_file.write(markdown)
+            md_file.write(markdown_with_css)
         
         print(f"Converted: {input_path} → {output_path}")
+        
+        # Also create an HTML preview file if requested
+        html_preview_path = output_path.with_suffix('.preview.html')
+        try:
+            import markdown as md
+            with open(html_preview_path, "w", encoding="utf-8") as html_file:
+                html_file.write(f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{output_path.stem} - Preview</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; max-width: 900px; margin: 0 auto; padding: 20px; }}
+        img {{ max-width: 100%; height: auto; margin: 20px 0; }}
+        table {{ border-collapse: collapse; width: 100%; margin: 20px 0; }}
+        th, td {{ border: 1px solid #ddd; padding: 8px; }}
+        th {{ background-color: #f2f2f2; }}
+        code {{ background-color: #f5f5f5; padding: 2px 4px; border-radius: 4px; }}
+        pre {{ background-color: #f5f5f5; padding: 10px; border-radius: 4px; overflow-x: auto; }}
+    </style>
+</head>
+<body>
+    {md.markdown(markdown, extensions=['tables', 'fenced_code'])}
+</body>
+</html>""")
+            print(f"Created HTML preview: {html_preview_path}")
+        except ImportError:
+            print("Note: Install 'markdown' package for HTML preview generation")
         return output_path
     
     def convert_directory(self, input_dir, output_dir=None, recursive=False):
