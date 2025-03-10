@@ -1,6 +1,6 @@
 markdown
 transformers
-faiss-cpu
+faiss-gpu
 azure-search-documents
 markdown2
 numpy

@@ -1,9 +1,10 @@
 import re
 import pandas as pd
+import json
 from typing import List, Dict, Union
 
 class MarkdownProcessor:
-    def __init__(self, chunk_size: int = 1000, chunk_overlap: int = 200, max_table_size: int = 2000):
+    def __init__(self, chunk_size: int = 4000, chunk_overlap: int = 200, max_table_size: int = 2000):
         """
         Initialize the Markdown processor.
         
@@ -28,52 +29,55 @@ class MarkdownProcessor:
         """
         parsed_blocks = []
         
-        # Regular expression to identify markdown tables
-        # This pattern looks for lines starting with | and containing at least one more |
-        table_pattern = r'(^\|.*?\|.*$\n)((?:^\|.*?\|.*$\n)+)'
+        # Use a more precise regex pattern that captures entire tables at once
+        # This pattern matches a table by finding lines that start with | and end with |
+        table_pattern = r'(^\|.*\|[ \t]*$\n(?:^\|.*\|[ \t]*$\n)+)'
         
-        # Split the text at table boundaries
-        split_text = re.split(f'({table_pattern})', markdown_text, flags=re.MULTILINE)
+        # Find all tables in the markdown text
+        tables = re.finditer(table_pattern, markdown_text, re.MULTILINE)
         
-        current_position = 0
-        i = 0
-        while i < len(split_text):
-            block = split_text[i].strip()
+        # Extract table positions
+        table_positions = []
+        for match in tables:
+            start, end = match.span()
+            table_positions.append((start, end, match.group(0)))
+        
+        # If no tables were found, just return the entire text as a single block
+        if not table_positions:
+            return [{'content': markdown_text, 'is_table': False, 'position': 0}]
+        
+        # Process the text, handling tables and non-table content
+        last_end = 0
+        for start, end, table_content in table_positions:
+            # Add any text before this table
+            if start > last_end:
+                non_table_content = markdown_text[last_end:start]
+                if non_table_content.strip():
+                    parsed_blocks.append({
+                        'content': non_table_content.strip(),
+                        'is_table': False,
+                        'position': last_end
+                    })
             
-            # If this is a table match (starts with | and contains | character)
-            if block and re.match(r'^\|.*\|.*$', block.split('\n')[0]):
-                # It's a table - might be just the first line of the table
-                table_content = block
-                
-                # If next parts exist and they're part of the table (regex capture groups)
-                if i + 2 < len(split_text) and split_text[i+1].strip():
-                    # Include the captured groups
-                    table_content = table_content + split_text[i+1].strip()
-                    i += 1
-                
-                # Parse table structure if possible
-                table_data = self._parse_table_structure(table_content)
-                
+            # Add the table
+            parsed_blocks.append({
+                'content': table_content.strip(),
+                'is_table': True,
+                'position': start,
+                'table_data': self._parse_table_structure(table_content)
+            })
+            
+            last_end = end
+        
+        # Add any remaining text after the last table
+        if last_end < len(markdown_text):
+            non_table_content = markdown_text[last_end:]
+            if non_table_content.strip():
                 parsed_blocks.append({
-                    'content': table_content,
-                    'is_table': True,
-                    'position': current_position,
-                    'table_data': table_data
-                })
-                
-                current_position += len(table_content)
-                
-            elif block:  # Only process non-empty blocks
-                # It's regular text
-                parsed_blocks.append({
-                    'content': block,
+                    'content': non_table_content.strip(),
                     'is_table': False,
-                    'position': current_position
+                    'position': last_end
                 })
-                
-                current_position += len(block)
-            
-            i += 1
         
         return parsed_blocks
 
@@ -108,6 +112,8 @@ class MarkdownProcessor:
                 # Ensure we have the right number of cells
                 if len(cells) < len(headers):
                     cells.extend([''] * (len(headers) - len(cells)))
+                elif len(cells) > len(headers):
+                    cells = cells[:len(headers)]
                 rows.append(cells)
         
         return {
@@ -164,7 +170,7 @@ class MarkdownProcessor:
                     })
             else:
                 # Handle table content
-                table_md = block['content']
+                table_md = block['content'].strip()
                 table_size = len(table_md)
                 
                 if table_size <= self.max_table_size:
@@ -180,15 +186,25 @@ class MarkdownProcessor:
                     rows = block['table_data']['rows']
                     headers = block['table_data']['headers']
                     num_rows = len(rows)
-                    chunk_rows = []
                     
+                    # Make sure each row has exactly the same number of columns as headers
+                    for i in range(len(rows)):
+                        # If a row has too few columns, pad with empty strings
+                        if len(rows[i]) < len(headers):
+                            rows[i].extend([''] * (len(headers) - len(rows[i])))
+                        # If a row has too many columns, truncate
+                        elif len(rows[i]) > len(headers):
+                            rows[i] = rows[i][:len(headers)]
+                    
+                    # Process rows in chunks
                     for i in range(0, num_rows, self.chunk_size):
                         chunk_rows = rows[i:i + self.chunk_size]
                         df_chunk = pd.DataFrame(chunk_rows, columns=headers)
-                        table_md_chunk = df_chunk.to_markdown(index=False)
+                        # Use tablefmt='pipe' for cleaner markdown output with less whitespace
+                        table_md_chunk = df_chunk.to_markdown(index=False, tablefmt='pipe')
                         
                         chunks.append({
-                            'content': table_md_chunk,
+                            'content': table_md_chunk.strip(),
                             'is_table': True,
                             'metadata': {
                                 'source_type': 'table'
@@ -196,3 +212,15 @@ class MarkdownProcessor:
                         })
         
         return chunks
+
+    def save_chunks(self, chunks: List[Dict], file_path: str) -> None:
+        """
+        Save the chunks to a JSONL file.
+        
+        Args:
+            chunks: List of chunks with metadata
+            file_path: Path to the output JSONL file
+        """
+        with open(file_path, 'w') as file:
+            for chunk in chunks:
+                file.write(json.dumps(chunk) + '\n')

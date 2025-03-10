@@ -1,6 +1,7 @@
 from typing import List, Tuple
 import faiss
 import numpy as np
+import pickle
 from .base import BaseStorage
 
 class FaissStorage(BaseStorage):
@@ -23,3 +24,30 @@ class FaissStorage(BaseStorage):
 
     def __len__(self):
         return len(self.documents)
+
+    def add(self, data):
+        embedding, document = data
+        # Convert PyTorch tensor to numpy array correctly
+        if hasattr(embedding, 'detach'):
+            # This is a PyTorch tensor
+            embedding_array = embedding.detach().cpu().numpy()
+        else:
+            # Already a numpy array or similar
+            embedding_array = np.array(embedding)
+        
+        # Ensure the array has the right shape (1, dimension)
+        if embedding_array.ndim == 1:
+            embedding_array = embedding_array.reshape(1, -1)
+            
+        self.add_documents(embedding_array, [document])
+
+    def retrieve(self, query):
+        query_embedding = np.array([query])
+        return self.search(query_embedding, k=1)
+
+    def save(self, index_path: str, documents_path: str):
+        # Save the FAISS index
+        faiss.write_index(self.index, index_path)
+        # Save the documents list
+        with open(documents_path, 'wb') as f:
+            pickle.dump(self.documents, f)

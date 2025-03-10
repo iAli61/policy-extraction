@@ -11,9 +11,9 @@ setup(
     install_requires=[
         'markdown',
         'transformers',
-        'faiss-cpu',  # or 'faiss-gpu' if you want GPU support
+        'faiss-gpu',  # or 'faiss-gpu' if you want GPU support
         'azure-search-documents',
-        'numpy',
+        'numpy==1.24.3',  # Ensure compatibility with FAISS
         'pandas'  # if you are handling tables
     ],
     classifiers=[
