@@ -1,6 +1,6 @@
 import os
 import asyncio
-from flamingo_client import FlamingoLLMClient, AsyncFlamingoLLMClient
+from flamingo import FlamingoLLMClient, AsyncFlamingoLLMClient
 import numpy as np
 
 async def flamingo_complete_if_cache(

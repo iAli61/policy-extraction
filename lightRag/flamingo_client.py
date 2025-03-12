@@ -9,7 +9,7 @@ import datetime
 from enum import Enum
 
 import msal
-from openai import OpenAI
+from openai import OpenAI, AsyncOpenAI
 import asyncio
 import concurrent.futures
 
