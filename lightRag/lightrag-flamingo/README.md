@@ -15,6 +15,10 @@ pip install httpx==0.27.0
 ```
 
 ## Usage
+installation:
+```
+pip install -e "git+https://github.com/iAli61/lightrag.git@b80a8bb93618801d66a061e2e143734a82a48a90#egg=lightrag-hku[api]"
+```
 
 ### OpenAI Integration
 
