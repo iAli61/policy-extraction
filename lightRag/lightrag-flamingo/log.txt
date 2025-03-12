@@ -1,0 +1,116 @@
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+Cell In[8], line 9
+      6 rag = await initialize_flamingo_rag()
+      8 with open("./markdown_files/20241119Placing Slip.md", "r", encoding="utf-8") as f:
+----> 9     await rag.ainsert(f.read())
+     11 # Perform naive search
+     12 print(
+     13     await rag.aquery(
+     14         "What are the top themes in this story?", param=QueryParam(mode="naive")
+     15     )
+     16 )
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\site-packages\lightrag\lightrag.py:579, in LightRAG.ainsert(self, input, split_by_character, split_by_character_only, ids)
+    569 """Async Insert documents with checkpoint support
+    570 
+    571 Args:
+   (...)
+    576     ids: list of unique document IDs, if not provided, MD5 hash IDs will be generated
+    577 """
+    578 await self.apipeline_enqueue_documents(input, ids)
+--> 579 await self.apipeline_process_enqueue_documents(
+    580     split_by_character, split_by_character_only
+    581 )
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\site-packages\lightrag\lightrag.py:965, in LightRAG.apipeline_process_enqueue_documents(self, split_by_character, split_by_character_only)
+    962     batches.append(batch(batch_idx, docs_batch, len(docs_batches)))
+    964 await asyncio.gather(*batches)
+--> 965 await self._insert_done()
+    967 # Check if there's a pending request to process more documents (with lock)
+    968 has_pending_request = False
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\site-packages\lightrag\lightrag.py:1038, in LightRAG._insert_done(self, pipeline_status, pipeline_status_lock)
+   1022 async def _insert_done(
+   1023     self, pipeline_status=None, pipeline_status_lock=None
+   1024 ) -> None:
+   1025     tasks = [
+   1026         cast(StorageNameSpace, storage_inst).index_done_callback()
+   1027         for storage_inst in [  # type: ignore
+   (...)
+   1036         if storage_inst is not None
+   1037     ]
+-> 1038     await asyncio.gather(*tasks)
+   1040     log_message = "All Insert done"
+   1041     logger.info(log_message)
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\site-packages\lightrag\kg\json_kv_impl.py:85, in JsonKVStorage.index_done_callback(self)
+     80     data_count = len(data_dict)
+     82 logger.info(
+     83     f"Process {os.getpid()} KV writting {data_count} records to {self.namespace}"
+     84 )
+---> 85 write_json(data_dict, self._file_name)
+     86 await clear_all_update_flags(self.namespace)
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\site-packages\lightrag\utils.py:292, in write_json(json_obj, file_name)
+    290 def write_json(json_obj, file_name):
+    291     with open(file_name, "w", encoding="utf-8") as f:
+--> 292         json.dump(json_obj, f, indent=2, ensure_ascii=False)
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\json\__init__.py:179, in dump(obj, fp, skipkeys, ensure_ascii, check_circular, allow_nan, cls, indent, separators, default, sort_keys, **kw)
+    173     iterable = cls(skipkeys=skipkeys, ensure_ascii=ensure_ascii,
+    174         check_circular=check_circular, allow_nan=allow_nan, indent=indent,
+    175         separators=separators,
+    176         default=default, sort_keys=sort_keys, **kw).iterencode(obj)
+    177 # could accelerate with writelines in some versions of Python, at
+    178 # a debuggability cost
+--> 179 for chunk in iterable:
+    180     fp.write(chunk)
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\json\encoder.py:432, in _make_iterencode.<locals>._iterencode(o, _current_indent_level)
+    430     yield from _iterencode_list(o, _current_indent_level)
+    431 elif isinstance(o, dict):
+--> 432     yield from _iterencode_dict(o, _current_indent_level)
+    433 else:
+    434     if markers is not None:
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\json\encoder.py:406, in _make_iterencode.<locals>._iterencode_dict(dct, _current_indent_level)
+    404         else:
+    405             chunks = _iterencode(value, _current_indent_level)
+--> 406         yield from chunks
+    407 if newline_indent is not None:
+    408     _current_indent_level -= 1
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\json\encoder.py:406, in _make_iterencode.<locals>._iterencode_dict(dct, _current_indent_level)
+    404         else:
+    405             chunks = _iterencode(value, _current_indent_level)
+--> 406         yield from chunks
+    407 if newline_indent is not None:
+    408     _current_indent_level -= 1
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\json\encoder.py:406, in _make_iterencode.<locals>._iterencode_dict(dct, _current_indent_level)
+    404         else:
+    405             chunks = _iterencode(value, _current_indent_level)
+--> 406         yield from chunks
+    407 if newline_indent is not None:
+    408     _current_indent_level -= 1
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\json\encoder.py:439, in _make_iterencode.<locals>._iterencode(o, _current_indent_level)
+    437         raise ValueError("Circular reference detected")
+    438     markers[markerid] = o
+--> 439 o = _default(o)
+    440 yield from _iterencode(o, _current_indent_level)
+    441 if markers is not None:
+
+File c:\Users\ny4013169\AppData\Local\anaconda3\envs\rag\Lib\json\encoder.py:180, in JSONEncoder.default(self, o)
+    161 def default(self, o):
+    162     """Implement this method in a subclass such that it returns
+    163     a serializable object for ``o``, or calls the base implementation
+    164     (to raise a ``TypeError``).
+   (...)
+    178 
+    179     """
+--> 180     raise TypeError(f'Object of type {o.__class__.__name__} '
+    181                     f'is not JSON serializable')
+
+TypeError: Object of type ChatCompletion is not JSON serializable
