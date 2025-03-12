@@ -2,8 +2,10 @@ import os
 import asyncio
 from flamingo_client import AsyncFlamingoLLMClient
 from lightrag.utils import EmbeddingFunc
+from lightrag import LightRAG, QueryParam
 import numpy as np
 from lightrag.kg.shared_storage import initialize_pipeline_status
+from sentence_transformers import SentenceTransformer
 
 WORKING_DIR = "./dickens"
 
@@ -29,25 +31,15 @@ async def flamingo_llm_model_func(
     )
 
 
-async def flamingo_embedding_func(texts: list[str]) -> np.ndarray:
-    client = AsyncFlamingoLLMClient(
-        subscription_id=os.getenv("SUBSCRIPTION_ID"),
-        base_url=os.getenv("FLAMINGO_BASE_URL"),
-        client_id=os.getenv("CLIENT_ID"),
-        client_secret=os.getenv("CLIENT_SECRET"),
-        subscription_key=os.getenv("SUBSCRIPTION_KEY"),
-        tenant=os.getenv("TENANT"),
-    )
-    response = await client.embeddings.create(
-        model="flamingo-embedding-model",
-        input=texts,
-    )
-    return np.array([dp.embedding for dp in response.data])
+async def embedding_func(texts: list[str]) -> np.ndarray:
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+    embeddings = model.encode(texts, convert_to_numpy=True)
+    return embeddings
 
 
 async def get_embedding_dim():
     test_text = ["This is a test sentence."]
-    embedding = await flamingo_embedding_func(test_text)
+    embedding = await embedding_func(test_text)
     embedding_dim = embedding.shape[1]
     return embedding_dim
 
@@ -57,7 +49,7 @@ async def test_funcs():
     result = await flamingo_llm_model_func("How are you?")
     print("flamingo_llm_model_func: ", result)
 
-    result = await flamingo_embedding_func(["How are you?"])
+    result = await embedding_func(["How are you?"])
     print("flamingo_embedding_func: ", result)
 
 
@@ -71,7 +63,7 @@ async def initialize_flamingo_rag():
         embedding_func=EmbeddingFunc(
             embedding_dim=embedding_dimension,
             max_token_size=8192,
-            func=flamingo_embedding_func,
+            func=embedding_func,
         ),
     )
 
