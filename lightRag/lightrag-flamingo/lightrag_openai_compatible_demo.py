@@ -6,8 +6,11 @@ from lightrag import LightRAG, QueryParam
 import numpy as np
 from lightrag.kg.shared_storage import initialize_pipeline_status
 from sentence_transformers import SentenceTransformer
+from lightrag.utils import logger, set_verbose_debug
 
-WORKING_DIR = "./dickens"
+WORKING_DIR = "./test"
+from dotenv import load_dotenv
+load_dotenv()
 
 if not os.path.exists(WORKING_DIR):
     os.mkdir(WORKING_DIR)
@@ -18,14 +21,14 @@ async def flamingo_llm_model_func(
 ) -> str:
     client = AsyncFlamingoLLMClient(
         subscription_id=os.getenv("SUBSCRIPTION_ID"),
-        base_url=os.getenv("FLAMINGO_BASE_URL"),
+        base_url=os.getenv("BASE_URL"),
         client_id=os.getenv("CLIENT_ID"),
         client_secret=os.getenv("CLIENT_SECRET"),
         subscription_key=os.getenv("SUBSCRIPTION_KEY"),
-        tenant=os.getenv("TENANT"),
+        tenant=os.getenv("TENANT_ID"),
     )
     return await client.chat.completions.create(
-        model="flamingo-model",
+        model="llama3",
         messages=[{"role": "user", "content": prompt}],
         **kwargs,
     )
@@ -74,11 +77,15 @@ async def initialize_flamingo_rag():
 
 
 async def main():
+    # Setup logging
+    logger.setLevel("DEBUG")
+    set_verbose_debug(True)
+    await test_funcs()
     try:
         # Initialize RAG instance
         rag = await initialize_flamingo_rag()
 
-        with open("./book.txt", "r", encoding="utf-8") as f:
+        with open("./markdown_files/20241119Placing Slip.md", "r", encoding="utf-8") as f:
             await rag.ainsert(f.read())
 
         # Perform naive search

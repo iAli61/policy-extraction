@@ -2,8 +2,10 @@
 import os
 import asyncio
 from flamingo_client import FlamingoLLMClient, AsyncFlamingoLLMClient
+from dotenv import load_dotenv
+load_dotenv()
 
-WORKING_DIR = "../../markdown_samples/20241119Placing Slip.md"
+WORKING_DIR = "./test"
 
 if not os.path.exists(WORKING_DIR):
     os.mkdir(WORKING_DIR)
@@ -13,14 +15,14 @@ async def llm_model_func(
 ) -> str:
     client = AsyncFlamingoLLMClient(
         subscription_id=os.getenv("SUBSCRIPTION_ID"),
-        base_url="https://api.flamingo.ai/v1",
+        base_url=os.getenv("BASE_URL"),
         client_id=os.getenv("CLIENT_ID"),
         client_secret=os.getenv("CLIENT_SECRET"),
         subscription_key=os.getenv("SUBSCRIPTION_KEY"),
-        tenant=os.getenv("TENANT"),
+        tenant=os.getenv("TENANT_ID"),
     )
     return await client.chat.completions.create(
-        model="flamingo-model",
+        model="llama3",
         messages=[{"role": "user", "content": prompt}],
         **kwargs,
     )
