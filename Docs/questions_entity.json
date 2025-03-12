@@ -1,56 +1,68 @@
 {
-    "policy_type": [
-      "What type of insurance policy is described in this document?",
-      "What category of insurance coverage does this document represent?",
-      "Can you tell me the classification of this insurance contract?",
-      "What kind of insurance protection is outlined in this policy?",
-      "Is this a primary, excess, or specialty insurance policy?",
-      "What does this insurance policy primarily cover?",
-      "What is the nature of the insurance described in this document?",
-      "What is the insurance product type mentioned in this document?"
+    "policy_type_questions": [
+      "What kind of insurance policy does [INSURED] have?",
+      "What type of coverage is provided by [POLICY_NAME]?",
+      "What is the classification of [INSURED]'s insurance policy?",
+      "Can you tell me the category of insurance for [POLICY_NAME]?",
+      "What insurance product is [INSURED] covered by?",
+      "Is [POLICY_NAME] a property, liability, or another type of insurance?",
+      "What specific insurance product does [POLICY_NAME] represent?",
+      "What class of insurance is [POLICY_NAME]?",
+      "What insurance line does [INSURED]'s policy fall under?"
     ],
-    "policy_period": [
-      "What is the effective time period for this insurance policy?",
-      "When does this policy begin and end?",
-      "What dates does this insurance coverage span?",
-      "What is the duration of coverage mentioned in this document?",
-      "When does this insurance policy expire?",
-      "What is the policy term for this insurance contract?",
-      "Between which dates is this insurance active?",
-      "What time zone applies to the policy period dates?",
-      "What is the coverage timeframe specified in this policy?"
+    "policy_period_questions": [
+      "When does [INSURED]'s insurance policy start and end?",
+      "What is the effective period for [POLICY_NAME]?",
+      "What are the start and end dates for [INSURED]'s coverage?",
+      "When does [POLICY_NAME] expire?",
+      "What is the term of [INSURED]'s insurance policy?",
+      "For what dates is [POLICY_NAME] in force?",
+      "What is the duration of [INSURED]'s insurance coverage?",
+      "What are the coverage dates for [POLICY_NAME]?",
+      "When was [POLICY_NAME] issued and when does it terminate?"
     ],
-    "limits": [
-      "What are the financial limits of coverage in this policy?",
-      "What is the maximum amount this policy will pay for a claim?",
-      "What are the aggregate limits specified in this insurance document?",
-      "How much coverage does this policy provide in total?",
-      "What retention or deductible amounts apply to this policy?",
-      "What sublimits are mentioned in this insurance contract?",
-      "What is the per-occurrence limit for this policy?",
-      "What are the key financial parameters of this insurance coverage?",
-      "What is the maximum liability under this insurance policy?"
+    "limits_questions": [
+      "What are the coverage limits for [POLICY_NAME]?",
+      "How much coverage does [INSURED] have under their policy?",
+      "What is the maximum payout for [INSURED]'s insurance policy?",
+      "What limits of liability apply to [POLICY_NAME]?",
+      "What is the aggregate limit for [INSURED]'s policy?",
+      "What is the per occurrence limit in [POLICY_NAME]?",
+      "How much will [INSURED]'s policy pay in the event of a claim?",
+      "What is the financial cap on [POLICY_NAME]?",
+      "What are the maximum coverage amounts in [INSURED]'s policy?"
     ],
-    "insured": [
-      "Who is the primary insured party in this document?",
-      "Which company or organization is covered by this policy?",
-      "Who is named as the policyholder in this insurance contract?",
-      "Which entity or entities receive protection under this policy?",
-      "Who is listed as the beneficiary of this insurance coverage?",
-      "What is the name of the business protected by this insurance?",
-      "Which parties are designated as insureds in this document?",
-      "Who would receive compensation in the event of a claim?",
-      "What company is being insured according to this policy?"
+    "insured_questions": [
+      "Who is covered by [POLICY_NAME]?",
+      "Which company or entity does [POLICY_NAME] insure?",
+      "Who is the named insured on [POLICY_NAME]?",
+      "Which business holds the [POLICY_TYPE] policy?",
+      "What entity is protected by [POLICY_NAME]?",
+      "Who is the policyholder for [POLICY_NAME]?",
+      "Which organization is the beneficiary of [POLICY_NAME]?",
+      "What company purchased the [POLICY_TYPE] insurance policy?",
+      "Who is the party being insured by [POLICY_NAME]?"
     ],
-    "jurisdiction": [
-      "Which legal jurisdiction governs this insurance policy?",
-      "What law applies to this insurance contract?",
-      "In which courts would disputes about this policy be resolved?",
-      "What is the governing law specified in this document?",
-      "Which country's or state's legal system has authority over this policy?",
-      "Where would legal proceedings related to this insurance take place?",
-      "What dispute resolution mechanism is specified in this policy?",
-      "What jurisdiction handles claims disputes arising from this policy?",
-      "Under which legal framework is this insurance agreement enforced?"
+    "jurisdiction_questions": [
+      "Which laws govern [POLICY_NAME]?",
+      "What jurisdiction applies to [INSURED]'s insurance policy?",
+      "Under which country or state's laws is [POLICY_NAME] enforced?",
+      "Which courts have authority over disputes related to [POLICY_NAME]?",
+      "What is the governing law for [INSURED]'s insurance policy?",
+      "Where would legal disputes about [POLICY_NAME] be resolved?",
+      "What is the legal jurisdiction for [INSURED]'s policy?",
+      "Which legal system applies to [POLICY_NAME]?",
+      "What law and courts govern disputes under [INSURED]'s policy?"
+    ],
+    "combined_field_questions": [
+      "Can you provide the policy type, period, limits, insured, and jurisdiction for [POLICY_NAME]?",
+      "I need all the key details for [POLICY_NAME] including coverage type, dates, limits, who's insured, and applicable laws.",
+      "What are the essential elements of [POLICY_NAME] including type, period, limits, insured party, and jurisdiction?",
+      "Give me a complete summary of [POLICY_NAME] with all policy fields.",
+      "What's the full breakdown of [INSURED]'s insurance policy including type, dates, limits, and governing law?",
+      "Provide all the fundamental information about [POLICY_NAME] including what type it is, when it's valid, limits, who's covered, and which laws apply.",
+      "What are all the basic details of the insurance policy for [INSURED]?",
+      "Show me a complete profile of [POLICY_NAME] with all key policy information.",
+      "What are the key characteristics of [POLICY_NAME] including policy type, period, limits, named insured, and jurisdiction?"
     ]
   }
