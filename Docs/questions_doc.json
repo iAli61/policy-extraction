@@ -1,0 +1,80 @@
+[
+    {
+      "name": "20241119Placing Slip",
+      "policy_type": "Primary Claims Made Directors and Officers Liability Insurance",
+      "policy_period": "17 July 2021 12:01am California time - 17 July 2022 12:01 California time",
+      "limits": "USD 5,000,000 each claim & in the aggregate for the Policy Period. Sublimit USD 250,000 in the aggregate for the Policy Period for all Security Holder Demand Investigatory Costs. USD 50,000 in the aggregate for the Policy Period for all Activist Investor Costs under Insuring Clause I.D. Retention USD 10,000,000 each Claim, Investigation or Inquiry under Insuring Clause I.B., other than a Securities Claim as detailed in Contract Wording and Endorsements. Retention USD 10,000,000 each Securities Claim under Insuring Clauses I.B and I.C",
+      "insured": "Bright Idea Industries",
+      "jurisdiction": "Law of New York, jurisdiction is a Court of Competent Jurisdiction in the US"
+    },
+    {
+      "name": "Agreed Slip - CR_2",
+      "policy_type": "Energy Contractor Package",
+      "policy_period": "5 December 2022 - 5 December 2023 at 00.01 Texas standard time",
+      "limits": "Agreed values of USD 35,000,001.10. Retention of 10% of loss, subject to minimum USD 150,000 any one Occurrence and maximum 1,000,000 any one occurrence. USD 50,000 any one Occurrence for Unscheduled Miscellaneous Non-Owned Property (Leased/Rented). Separate Additional Limits (up to amounts shown below) (100% unless stated otherwise), per Occurrence: 25% of scheduled item value in respect of Removal of Wreck/Debris. 25% of scheduled item value in respect of Sue and Labour Expense.",
+      "insured": "Code Rouge Incorporated and/or their parent and/or subsidiary and/or associated and/or affiliated and/or controlled companies as their respective rights and interests may appear as now existing or as hereafter created and any other organisation under the Insured's control, of which it assumes active management or where the Insured has a legal and/or contractual responsibility to insure. Including principals, officers, directors, stockholders and employees of the Insured whilst acting in their capacity as such and as more fully defined in the policy wording.",
+      "jurisdiction": "Law of Texas and jurisdiction of a court of competent jurisdiction in the US"
+    },
+    {
+      "name": "B0145CVUSA1000000 - Quote Slip",
+      "policy_type": "PRIMARY NETWORK SECURITY & PRIVACY, BUSINESS INTERRUPTION & EXTRA EXPENSE, CYBER EXTORTION, AND MEDIA ERRORS & OMISSIONS INSURANCE",
+      "policy_period": "1 December 2023 to 1 December 2024 both at 12:01am Russia local time",
+      "limits": "OPTION A: Aggregate Limit of Indemnity: RUB 5,000,000 for all covered Insuring Clauses combined. OPTION B: Aggregate Limit of Indemnity: RUB 10,000,000 for all covered Insuring Clauses combined. OPTION C: Aggregate Limit of Indemnity: RUB 10,000,000 for all covered Insuring Clauses combined. Note - this policy has a lot of sublimits and retentions at page 2-4 and 21-22.",
+      "insured": "Alistorm Inc, Vivent Solar Inc",
+      "jurisdiction": "California law, jurisdiction is competent court in the United States"
+    },
+    {
+      "name": "MRC 2023 - AFC Richmond 15xs150 V2",
+      "policy_type": "This is an excess policy but its not clear what its actually intended to be covering. Whole account reinsurance?",
+      "policy_period": "24 July 2023 to 24 July 2024, both days 12:01am standard time South Carolina",
+      "limits": "USD 45,000,000 each and every claim in the aggregate including costs and expenses, sitting in excess of USD 450,000,000 each and every claim and in the aggregate, including costs and expenses. Sublimit dropdown of USD 1,500,000 for Other Provider System/Security Failure",
+      "insured": "Flatley Group, S.P.H.E.R.E Corporation and S.P.H.E.R.E Transportation Systems",
+      "jurisdiction": "California law, jurisdiction is competent court in the United States"
+    },
+    {
+      "name": "NF0076722 Final Placed Slip",
+      "policy_type": "Primary Cyber Liability Insurance",
+      "policy_period": "28 October 2022 to 30 September 2023, both 12:01am Luxembourg time",
+      "limits": "Separate limits of EUR 5,000,000 for all Sections 1-7 and Media Liability. Retention of EUR 1,000,000 each and every claim (including claims expenses)",
+      "insured": "NOVA FIRM ELECTRON",
+      "jurisdiction": "Law of Luxembourg and Courts of Luxembourg"
+    },
+    {
+      "name": "Noinimod Energy - Final slip",
+      "policy_type": "Cyber Exclusion Buyback Insurance",
+      "policy_period": "17 July 2022 to 17 July 2023, both days 12:01am Italy standard time",
+      "limits": "EUR 9,000,000 part of EUR 95,000,000 Policy Aggregate Limit",
+      "insured": "Mitsutech",
+      "jurisdiction": "Laws of Indiana and Virginia ARIAS Arbitration (note this appears to contract elsewhere in the policy which has Court of Competent Jurisdiction in the US under the Service of Suit clause)."
+    },
+    {
+      "name": "SLIP_FRFINMW21509660000200001",
+      "policy_type": "Primary Directors & Officers and Company Liability Insurance Policy",
+      "policy_period": "29 September 2021 to 29 September 2022, both days 12:01am Colorado standard time",
+      "limits": "USD 5,000,000 in the aggregate for the Policy period. Retention USD 15,000,000 each claim, investigation or inquiry under insuring clause i.b., other than a securities claim. Retention USD 15,000,000 each securities claim under insuring clauses i.b and i.c. Additional Advanced Boardroom and Company Protection: USD 5,000,000 in the aggregate for the policy period, with a USD 250,000 sublimit for all security holder demand investigatory costs or books and records costs under insuring clause i.d. Same Retentions as above.",
+      "insured": "Madison Wax Incorporated",
+      "jurisdiction": "Law of Delaware and jurisdiction of the New York courts"
+    },
+    {
+      "name": "Third Excess Signed Slip - B174010495FS23",
+      "policy_type": "Third Excess Cyber Liability Insurance",
+      "policy_period": "1 May 2023 to 30 April 2024 both days inclusive local standard time in the UK",
+      "limits": "GBP 5,000,000 in the aggregate and in excess of the Underlying Limit of Liability of GBP 15,000,000, in turn Excess of any Primary Retentions of GBP 5,000,000 each and every claim (note the policy then cites excess policies but seems to be missing one - implied gap in cover here).",
+      "insured": "Altitude Airlines Limited",
+      "jurisdiction": "Law of England and Wales and jurisdiction as per \"dispute resolution provision in the Primary Policy\""
+    },
+    {
+      "name": "20240813 Placing Slip - liablity_OBFUSCATED",
+      "policy_period": "1 February 2024 to 1 February 2025, 00:01 CST",
+      "limits": "Each \"Occurrence\" (as defined) USD 15,000,000. Subject to an aggregate limit of \"Products Liability\" and \"Combined Operations Liability\" combined USD 15,000,000. All other coverages combined USD 15,000,000. Self insured retention per \"Occurrence\" USD 250,000",
+      "insured": "Zenith Enterprises and Apex Oil Services, Inc. ABC Bank, together with its successors and/or assigns, as Agent",
+      "jurisdiction": "New York law, USA Courts jurisdiction"
+    },
+    {
+      "name": "Primary Slip CT review 030624_OBFUSCATED",
+      "policy_period": "12.01am on 11 September 2023 to 12.01 on 11 September 2024 California local standard time",
+      "limits": "Aggregate Limit of Indemnity under PARTS ONE, TWO and THREE of this Certificate combined: USD 15,000,000. Single Loss Limit of Indemnity under PARTS ONE and TWO: USD 5,000,000",
+      "insured": "zorgInc. and ZorgGroup",
+      "jurisdiction": "California Law, Court of a competent jurisdiction within the US."
+    }
+  ]
