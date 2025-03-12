@@ -1,7 +1,6 @@
 import os
 import asyncio
-from lightrag import LightRAG, QueryParam
-from .openai import openai_complete_if_cache, openai_embed
+from flamingo_client import AsyncFlamingoLLMClient
 from lightrag.utils import EmbeddingFunc
 import numpy as np
 from lightrag.kg.shared_storage import initialize_pipeline_status
@@ -12,59 +11,67 @@ if not os.path.exists(WORKING_DIR):
     os.mkdir(WORKING_DIR)
 
 
-async def llm_model_func(
-    prompt, system_prompt=None, history_messages=[], keyword_extraction=False, **kwargs
+async def flamingo_llm_model_func(
+    prompt, system_prompt=None, history_messages=[], **kwargs
 ) -> str:
-    return await openai_complete_if_cache(
-        "solar-mini",
-        prompt,
-        system_prompt=system_prompt,
-        history_messages=history_messages,
-        api_key=os.getenv("UPSTAGE_API_KEY"),
-        base_url="https://api.upstage.ai/v1/solar",
+    client = AsyncFlamingoLLMClient(
+        subscription_id=os.getenv("SUBSCRIPTION_ID"),
+        base_url=os.getenv("FLAMINGO_BASE_URL"),
+        client_id=os.getenv("CLIENT_ID"),
+        client_secret=os.getenv("CLIENT_SECRET"),
+        subscription_key=os.getenv("SUBSCRIPTION_KEY"),
+        tenant=os.getenv("TENANT"),
+    )
+    return await client.chat.completions.create(
+        model="flamingo-model",
+        messages=[{"role": "user", "content": prompt}],
         **kwargs,
     )
 
 
-async def embedding_func(texts: list[str]) -> np.ndarray:
-    return await openai_embed(
-        texts,
-        model="solar-embedding-1-large-query",
-        api_key=os.getenv("UPSTAGE_API_KEY"),
-        base_url="https://api.upstage.ai/v1/solar",
+async def flamingo_embedding_func(texts: list[str]) -> np.ndarray:
+    client = AsyncFlamingoLLMClient(
+        subscription_id=os.getenv("SUBSCRIPTION_ID"),
+        base_url=os.getenv("FLAMINGO_BASE_URL"),
+        client_id=os.getenv("CLIENT_ID"),
+        client_secret=os.getenv("CLIENT_SECRET"),
+        subscription_key=os.getenv("SUBSCRIPTION_KEY"),
+        tenant=os.getenv("TENANT"),
     )
+    response = await client.embeddings.create(
+        model="flamingo-embedding-model",
+        input=texts,
+    )
+    return np.array([dp.embedding for dp in response.data])
 
 
 async def get_embedding_dim():
     test_text = ["This is a test sentence."]
-    embedding = await embedding_func(test_text)
+    embedding = await flamingo_embedding_func(test_text)
     embedding_dim = embedding.shape[1]
     return embedding_dim
 
 
 # function test
 async def test_funcs():
-    result = await llm_model_func("How are you?")
-    print("llm_model_func: ", result)
+    result = await flamingo_llm_model_func("How are you?")
+    print("flamingo_llm_model_func: ", result)
 
-    result = await embedding_func(["How are you?"])
-    print("embedding_func: ", result)
-
-
-# asyncio.run(test_funcs())
+    result = await flamingo_embedding_func(["How are you?"])
+    print("flamingo_embedding_func: ", result)
 
 
-async def initialize_rag():
+async def initialize_flamingo_rag():
     embedding_dimension = await get_embedding_dim()
     print(f"Detected embedding dimension: {embedding_dimension}")
 
     rag = LightRAG(
         working_dir=WORKING_DIR,
-        llm_model_func=llm_model_func,
+        llm_model_func=flamingo_llm_model_func,
         embedding_func=EmbeddingFunc(
             embedding_dim=embedding_dimension,
             max_token_size=8192,
-            func=embedding_func,
+            func=flamingo_embedding_func,
         ),
     )
 
@@ -77,7 +84,7 @@ async def initialize_rag():
 async def main():
     try:
         # Initialize RAG instance
-        rag = await initialize_rag()
+        rag = await initialize_flamingo_rag()
 
         with open("./book.txt", "r", encoding="utf-8") as f:
             await rag.ainsert(f.read())
