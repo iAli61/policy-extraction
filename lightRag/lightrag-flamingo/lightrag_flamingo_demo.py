@@ -3,7 +3,7 @@ import os
 import asyncio
 from flamingo_client import FlamingoLLMClient, AsyncFlamingoLLMClient
 
-WORKING_DIR = "./dickens"
+WORKING_DIR = "../../markdown_samples/20241119Placing Slip.md"
 
 if not os.path.exists(WORKING_DIR):
     os.mkdir(WORKING_DIR)
