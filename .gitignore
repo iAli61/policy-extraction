@@ -172,3 +172,5 @@ cython_debug/
 
 markdown_files
 output
+src/lightrag
+src/lightrag-hku
