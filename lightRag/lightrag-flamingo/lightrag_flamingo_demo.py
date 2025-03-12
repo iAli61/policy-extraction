@@ -2,7 +2,6 @@
 import os
 import asyncio
 from flamingo_client import FlamingoLLMClient, AsyncFlamingoLLMClient
-from lightrag.utils import QueryParam
 
 WORKING_DIR = "./dickens"
 
