@@ -1,7 +1,7 @@
 # filepath: /home/azureuser/policy-extraction/lightRag/lightrag/lightrag_flamingo_demo.py
 import os
 import asyncio
-from flamingo import FlamingoLLMClient, AsyncFlamingoLLMClient
+from flamingo_client import FlamingoLLMClient, AsyncFlamingoLLMClient
 from lightrag.utils import QueryParam
 
 WORKING_DIR = "./dickens"
