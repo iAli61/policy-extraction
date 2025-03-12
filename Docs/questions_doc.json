@@ -1,252 +1,442 @@
 [
     {
-      "policy_name": "20241119Placing Slip",
-      "qa_pairs": [
-        {
-          "question": "What is the coverage limit for Bright Idea Industries' Directors and Officers policy?",
-          "answer": "USD 5,000,000 each claim & in the aggregate for the Policy Period"
-        },
-        {
-          "question": "When does Bright Idea Industries' D&O insurance expire?",
-          "answer": "17 July 2022 12:01 California time"
-        },
-        {
-          "question": "What law governs the D&O policy for Bright Idea Industries?",
-          "answer": "Law of New York"
-        },
-        {
-          "question": "How much is the retention for Securities Claims under Bright Idea Industries' D&O policy?",
-          "answer": "USD 10,000,000 each Securities Claim under Insuring Clauses I.B and I.C"
-        },
-        {
-          "question": "Is there a sublimit for Activist Investor Costs in Bright Idea's D&O policy?",
-          "answer": "Yes, USD 50,000 in the aggregate for the Policy Period for all Activist Investor Costs under Insuring Clause I.D."
-        }
-      ]
+        "policy_name": "20241119Placing Slip",
+        "entity": "Bright Idea Industries",
+        "qa_pairs": [
+            {
+                "question": "What type of insurance policy does Bright Idea Industries have?",
+                "answer": "Primary Claims Made Directors and Officers Liability Insurance"
+            },
+            {
+                "question": "When does Bright Idea Industries' insurance policy expire?",
+                "answer": "17 July 2022 12:01 California time"
+            },
+            {
+                "question": "What is the coverage limit for Bright Idea Industries' D&O policy?",
+                "answer": "USD 5,000,000 each claim & in the aggregate for the Policy Period"
+            },
+            {
+                "question": "Which jurisdiction's law applies to Bright Idea Industries' insurance policy?",
+                "answer": "Law of New York, jurisdiction is a Court of Competent Jurisdiction in the US"
+            },
+            {
+                "question": "What is the retention amount for a Securities Claim under Bright Idea Industries' policy?",
+                "answer": "USD 10,000,000 each Securities Claim under Insuring Clauses I.B and I.C"
+            },
+            {
+                "question": "What is the coverage limit for Bright Idea Industries' Directors and Officers policy?",
+                "answer": "USD 5,000,000 each claim & in the aggregate for the Policy Period"
+            },
+            {
+                "question": "When does Bright Idea Industries' D&O insurance expire?",
+                "answer": "17 July 2022 12:01 California time"
+            },
+            {
+                "question": "What law governs the D&O policy for Bright Idea Industries?",
+                "answer": "Law of New York"
+            },
+            {
+                "question": "How much is the retention for Securities Claims under Bright Idea Industries' D&O policy?",
+                "answer": "USD 10,000,000 each Securities Claim under Insuring Clauses I.B and I.C"
+            },
+            {
+                "question": "Is there a sublimit for Activist Investor Costs in Bright Idea's D&O policy?",
+                "answer": "Yes, USD 50,000 in the aggregate for the Policy Period for all Activist Investor Costs under Insuring Clause I.D."
+            }
+        ]
     },
     {
-      "policy_name": "Agreed Slip - CR_2",
-      "qa_pairs": [
-        {
-          "question": "What is the policy value for Code Rouge Incorporated's Energy Contractor Package?",
-          "answer": "Agreed values of USD 35,000,001.10"
-        },
-        {
-          "question": "What is the retention percentage for Code Rouge's policy?",
-          "answer": "10% of loss, subject to minimum USD 150,000 any one Occurrence and maximum 1,000,000 any one occurrence"
-        },
-        {
-          "question": "When does the Energy Contractor Package for Code Rouge start and end?",
-          "answer": "5 December 2022 - 5 December 2023 at 00.01 Texas standard time"
-        },
-        {
-          "question": "Which jurisdiction's laws apply to Code Rouge's insurance policy?",
-          "answer": "Law of Texas and jurisdiction of a court of competent jurisdiction in the US"
-        },
-        {
-          "question": "What is the limit for Unscheduled Miscellaneous Non-Owned Property in Code Rouge's policy?",
-          "answer": "USD 50,000 any one Occurrence for Unscheduled Miscellaneous Non-Owned Property (Leased/Rented)"
-        }
-      ]
+        "policy_name": "Agreed Slip - CR_2",
+        "entity": "Code Rouge Incorporated",
+        "qa_pairs": [
+            {
+                "question": "What type of insurance does Code Rouge have?",
+                "answer": "Energy Contractor Package"
+            },
+            {
+                "question": "When does Code Rouge's insurance policy begin and end?",
+                "answer": "5 December 2022 - 5 December 2023 at 00.01 Texas standard time"
+            },
+            {
+                "question": "What is the agreed value of Code Rouge's insurance policy?",
+                "answer": "USD 35,000,001.10"
+            },
+            {
+                "question": "What is the retention percentage for Code Rouge's insurance policy?",
+                "answer": "10% of loss, subject to minimum USD 150,000 any one Occurrence and maximum 1,000,000 any one occurrence"
+            },
+            {
+                "question": "Which jurisdiction governs Code Rouge's insurance policy?",
+                "answer": "Law of Texas and jurisdiction of a court of competent jurisdiction in the US"
+            },
+            {
+                "question": "What is the policy value for Code Rouge Incorporated's Energy Contractor Package?",
+                "answer": "Agreed values of USD 35,000,001.10"
+            },
+            {
+                "question": "What is the retention percentage for Code Rouge's policy?",
+                "answer": "10% of loss, subject to minimum USD 150,000 any one Occurrence and maximum 1,000,000 any one occurrence"
+            },
+            {
+                "question": "When does the Energy Contractor Package for Code Rouge start and end?",
+                "answer": "5 December 2022 - 5 December 2023 at 00.01 Texas standard time"
+            },
+            {
+                "question": "Which jurisdiction's laws apply to Code Rouge's insurance policy?",
+                "answer": "Law of Texas and jurisdiction of a court of competent jurisdiction in the US"
+            },
+            {
+                "question": "What is the limit for Unscheduled Miscellaneous Non-Owned Property in Code Rouge's policy?",
+                "answer": "USD 50,000 any one Occurrence for Unscheduled Miscellaneous Non-Owned Property (Leased/Rented)"
+            }
+        ]
     },
     {
-      "policy_name": "B0145CVUSA1000000 - Quote Slip",
-      "qa_pairs": [
-        {
-          "question": "What options are available for the Aggregate Limit of Indemnity in Alistorm Inc's cyber policy?",
-          "answer": "OPTION A: RUB 5,000,000, OPTION B: RUB 10,000,000, OPTION C: RUB 10,000,000 for all covered Insuring Clauses combined"
-        },
-        {
-          "question": "When does Alistorm and Vivent Solar's cyber insurance policy expire?",
-          "answer": "1 December 2024 at 12:01am Russia local time"
-        },
-        {
-          "question": "What type of insurance coverage does Alistorm Inc have?",
-          "answer": "PRIMARY NETWORK SECURITY & PRIVACY, BUSINESS INTERRUPTION & EXTRA EXPENSE, CYBER EXTORTION, AND MEDIA ERRORS & OMISSIONS INSURANCE"
-        },
-        {
-          "question": "Which law governs the cyber policy for Alistorm Inc and Vivent Solar?",
-          "answer": "California law"
-        },
-        {
-          "question": "What is the currency of Alistorm's cyber policy limits?",
-          "answer": "Russian Rubles (RUB)"
-        }
-      ]
+        "policy_name": "B0145CVUSA1000000 - Quote Slip",
+        "entity": "Alistorm Inc and Vivent Solar Inc",
+        "qa_pairs": [
+            {
+                "question": "What type of cyber insurance do Alistorm Inc and Vivent Solar Inc have?",
+                "answer": "PRIMARY NETWORK SECURITY & PRIVACY, BUSINESS INTERRUPTION & EXTRA EXPENSE, CYBER EXTORTION, AND MEDIA ERRORS & OMISSIONS INSURANCE"
+            },
+            {
+                "question": "What is the policy period for Alistorm and Vivent Solar's cyber insurance?",
+                "answer": "1 December 2023 to 1 December 2024 both at 12:01am Russia local time"
+            },
+            {
+                "question": "What are the aggregate limit options for Alistorm and Vivent Solar's cyber policy?",
+                "answer": "OPTION A: RUB 5,000,000, OPTION B: RUB 10,000,000, OPTION C: RUB 10,000,000"
+            },
+            {
+                "question": "Which law applies to Alistorm and Vivent Solar's insurance policy?",
+                "answer": "California law, jurisdiction is competent court in the United States"
+            },
+            {
+                "question": "What currency are the limits denominated in for Alistorm and Vivent Solar's policy?",
+                "answer": "Russian Rubles (RUB)"
+            },
+            {
+                "question": "What options are available for the Aggregate Limit of Indemnity in Alistorm Inc's cyber policy?",
+                "answer": "OPTION A: RUB 5,000,000, OPTION B: RUB 10,000,000, OPTION C: RUB 10,000,000 for all covered Insuring Clauses combined"
+            },
+            {
+                "question": "When does Alistorm and Vivent Solar's cyber insurance policy expire?",
+                "answer": "1 December 2024 at 12:01am Russia local time"
+            },
+            {
+                "question": "What type of insurance coverage does Alistorm Inc have?",
+                "answer": "PRIMARY NETWORK SECURITY & PRIVACY, BUSINESS INTERRUPTION & EXTRA EXPENSE, CYBER EXTORTION, AND MEDIA ERRORS & OMISSIONS INSURANCE"
+            },
+            {
+                "question": "Which law governs the cyber policy for Alistorm Inc and Vivent Solar?",
+                "answer": "California law"
+            },
+            {
+                "question": "What is the currency of Alistorm's cyber policy limits?",
+                "answer": "Russian Rubles (RUB)"
+            }
+        ]
     },
     {
-      "policy_name": "MRC 2023 - AFC Richmond 15xs150 V2",
-      "qa_pairs": [
-        {
-          "question": "What is the limit for Flatley Group's excess policy?",
-          "answer": "USD 45,000,000 each and every claim in the aggregate including costs and expenses"
-        },
-        {
-          "question": "What is the attachment point for S.P.H.E.R.E Corporation's excess policy?",
-          "answer": "In excess of USD 450,000,000 each and every claim and in the aggregate"
-        },
-        {
-          "question": "Is there a sublimit for Other Provider System/Security Failure in Flatley Group's policy?",
-          "answer": "Yes, sublimit dropdown of USD 1,500,000 for Other Provider System/Security Failure"
-        },
-        {
-          "question": "When does the coverage period for S.P.H.E.R.E Transportation Systems' excess policy begin and end?",
-          "answer": "24 July 2023 to 24 July 2024, both days 12:01am standard time South Carolina"
-        },
-        {
-          "question": "Which jurisdiction's laws apply to Flatley Group's excess policy?",
-          "answer": "California law, jurisdiction is competent court in the United States"
-        }
-      ]
+        "policy_name": "MRC 2023 - AFC Richmond 15xs150 V2",
+        "entity": "Flatley Group, S.P.H.E.R.E Corporation and S.P.H.E.R.E Transportation Systems",
+        "qa_pairs": [
+            {
+                "question": "What type of policy do Flatley Group and S.P.H.E.R.E entities have?",
+                "answer": "Excess policy (potentially whole account reinsurance)"
+            },
+            {
+                "question": "What is the policy period for Flatley Group's insurance?",
+                "answer": "24 July 2023 to 24 July 2024, both days 12:01am standard time South Carolina"
+            },
+            {
+                "question": "What is the excess limit for Flatley Group and S.P.H.E.R.E entities?",
+                "answer": "USD 45,000,000 each and every claim in the aggregate including costs and expenses"
+            },
+            {
+                "question": "What is the underlying limit that Flatley Group's excess policy sits above?",
+                "answer": "USD 450,000,000 each and every claim and in the aggregate, including costs and expenses"
+            },
+            {
+                "question": "Is there a sublimit in Flatley Group's excess policy?",
+                "answer": "Yes, sublimit dropdown of USD 1,500,000 for Other Provider System/Security Failure"
+            },
+            {
+                "question": "What is the limit for Flatley Group's excess policy?",
+                "answer": "USD 45,000,000 each and every claim in the aggregate including costs and expenses"
+            },
+            {
+                "question": "What is the attachment point for S.P.H.E.R.E Corporation's excess policy?",
+                "answer": "In excess of USD 450,000,000 each and every claim and in the aggregate"
+            },
+            {
+                "question": "Is there a sublimit for Other Provider System/Security Failure in Flatley Group's policy?",
+                "answer": "Yes, sublimit dropdown of USD 1,500,000 for Other Provider System/Security Failure"
+            },
+            {
+                "question": "When does the coverage period for S.P.H.E.R.E Transportation Systems' excess policy begin and end?",
+                "answer": "24 July 2023 to 24 July 2024, both days 12:01am standard time South Carolina"
+            },
+            {
+                "question": "Which jurisdiction's laws apply to Flatley Group's excess policy?",
+                "answer": "California law, jurisdiction is competent court in the United States"
+            }
+        ]
     },
     {
-      "policy_name": "NF0076722 Final Placed Slip",
-      "qa_pairs": [
-        {
-          "question": "What is the coverage limit for NOVA FIRM ELECTRON's cyber liability policy?",
-          "answer": "Separate limits of EUR 5,000,000 for all Sections 1-7 and Media Liability"
-        },
-        {
-          "question": "What is the retention amount for claims under NOVA FIRM ELECTRON's cyber policy?",
-          "answer": "Retention of EUR 1,000,000 each and every claim (including claims expenses)"
-        },
-        {
-          "question": "When does NOVA FIRM ELECTRON's cyber liability policy end?",
-          "answer": "30 September 2023, 12:01am Luxembourg time"
-        },
-        {
-          "question": "Which courts have jurisdiction over NOVA FIRM ELECTRON's insurance policy?",
-          "answer": "Courts of Luxembourg"
-        },
-        {
-          "question": "What type of insurance coverage does NOVA FIRM ELECTRON have?",
-          "answer": "Primary Cyber Liability Insurance"
-        }
-      ]
+        "policy_name": "NF0076722 Final Placed Slip",
+        "entity": "NOVA FIRM ELECTRON",
+        "qa_pairs": [
+            {
+                "question": "What type of insurance does NOVA FIRM ELECTRON have?",
+                "answer": "Primary Cyber Liability Insurance"
+            },
+            {
+                "question": "What is the policy period for NOVA FIRM ELECTRON's cyber insurance?",
+                "answer": "28 October 2022 to 30 September 2023, both 12:01am Luxembourg time"
+            },
+            {
+                "question": "What is the limit for NOVA FIRM ELECTRON's cyber policy?",
+                "answer": "Separate limits of EUR 5,000,000 for all Sections 1-7 and Media Liability"
+            },
+            {
+                "question": "What is the retention amount for NOVA FIRM ELECTRON's policy?",
+                "answer": "EUR 1,000,000 each and every claim (including claims expenses)"
+            },
+            {
+                "question": "Which courts have jurisdiction for NOVA FIRM ELECTRON's insurance disputes?",
+                "answer": "Law of Luxembourg and Courts of Luxembourg"
+            }
+        ]
     },
     {
-      "policy_name": "Noinimod Energy - Final slip",
-      "qa_pairs": [
-        {
-          "question": "What is Mitsutech's cyber exclusion buyback policy limit?",
-          "answer": "EUR 9,000,000 part of EUR 95,000,000 Policy Aggregate Limit"
-        },
-        {
-          "question": "When does Mitsutech's cyber exclusion buyback coverage begin and end?",
-          "answer": "17 July 2022 to 17 July 2023, both days 12:01am Italy standard time"
-        },
-        {
-          "question": "Which states' laws govern Mitsutech's cyber exclusion buyback policy?",
-          "answer": "Laws of Indiana and Virginia"
-        },
-        {
-          "question": "What dispute resolution method applies to Mitsutech's policy?",
-          "answer": "ARIAS Arbitration (though there appears to be a contradiction with the Service of Suit clause)"
-        },
-        {
-          "question": "What is the name of Mitsutech's policy slip?",
-          "answer": "Noinimod Energy - Final slip"
-        }
-      ]
+        "policy_name": "Noinimod Energy - Final slip",
+        "entity": "Mitsutech",
+        "qa_pairs": [
+            {
+                "question": "What type of insurance does Mitsutech have?",
+                "answer": "Cyber Exclusion Buyback Insurance"
+            },
+            {
+                "question": "When does Mitsutech's cyber exclusion policy expire?",
+                "answer": "17 July 2023, 12:01am Italy standard time"
+            },
+            {
+                "question": "What is the limit of Mitsutech's cyber exclusion buyback coverage?",
+                "answer": "EUR 9,000,000 part of EUR 95,000,000 Policy Aggregate Limit"
+            },
+            {
+                "question": "Which state laws govern Mitsutech's cyber exclusion policy?",
+                "answer": "Laws of Indiana and Virginia"
+            },
+            {
+                "question": "What is the dispute resolution mechanism for Mitsutech's policy?",
+                "answer": "ARIAS Arbitration (with a potential contradiction regarding Court of Competent Jurisdiction in the US under the Service of Suit clause)"
+            },
+            {
+                "question": "What is Mitsutech's cyber exclusion buyback policy limit?",
+                "answer": "EUR 9,000,000 part of EUR 95,000,000 Policy Aggregate Limit"
+            },
+            {
+                "question": "When does Mitsutech's cyber exclusion buyback coverage begin and end?",
+                "answer": "17 July 2022 to 17 July 2023, both days 12:01am Italy standard time"
+            },
+            {
+                "question": "Which states' laws govern Mitsutech's cyber exclusion buyback policy?",
+                "answer": "Laws of Indiana and Virginia"
+            },
+            {
+                "question": "What dispute resolution method applies to Mitsutech's policy?",
+                "answer": "ARIAS Arbitration (though there appears to be a contradiction with the Service of Suit clause)"
+            },
+            {
+                "question": "What is the name of Mitsutech's policy slip?",
+                "answer": "Noinimod Energy - Final slip"
+            }
+        ]
     },
     {
-      "policy_name": "SLIP_FRFINMW21509660000200001",
-      "qa_pairs": [
-        {
-          "question": "What is the aggregate limit for Madison Wax Incorporated's D&O policy?",
-          "answer": "USD 5,000,000 in the aggregate for the Policy period"
-        },
-        {
-          "question": "What is the retention for securities claims under Madison Wax's policy?",
-          "answer": "USD 15,000,000 each securities claim under insuring clauses i.b and i.c"
-        },
-        {
-          "question": "When does Madison Wax's D&O coverage period end?",
-          "answer": "29 September 2022, 12:01am Colorado standard time"
-        },
-        {
-          "question": "Is there additional boardroom protection in Madison Wax's policy?",
-          "answer": "Yes, Additional Advanced Boardroom and Company Protection: USD 5,000,000 in the aggregate for the policy period"
-        },
-        {
-          "question": "Which courts have jurisdiction over Madison Wax Incorporated's D&O policy?",
-          "answer": "New York courts"
-        }
-      ]
+        "policy_name": "SLIP_FRFINMW21509660000200001",
+        "entity": "Madison Wax Incorporated",
+        "qa_pairs": [
+            {
+                "question": "What type of liability insurance does Madison Wax Incorporated have?",
+                "answer": "Primary Directors & Officers and Company Liability Insurance Policy"
+            },
+            {
+                "question": "What is the policy period for Madison Wax's D&O insurance?",
+                "answer": "29 September 2021 to 29 September 2022, both days 12:01am Colorado standard time"
+            },
+            {
+                "question": "What is the aggregate limit for Madison Wax's D&O policy?",
+                "answer": "USD 5,000,000 in the aggregate for the Policy period"
+            },
+            {
+                "question": "What is the retention amount for a securities claim under Madison Wax's policy?",
+                "answer": "USD 15,000,000 each securities claim under insuring clauses i.b and i.c"
+            },
+            {
+                "question": "Which state law governs Madison Wax's D&O policy?",
+                "answer": "Law of Delaware and jurisdiction of the New York courts"
+            },
+            {
+                "question": "What is the aggregate limit for Madison Wax Incorporated's D&O policy?",
+                "answer": "USD 5,000,000 in the aggregate for the Policy period"
+            },
+            {
+                "question": "What is the retention for securities claims under Madison Wax's policy?",
+                "answer": "USD 15,000,000 each securities claim under insuring clauses i.b and i.c"
+            },
+            {
+                "question": "When does Madison Wax's D&O coverage period end?",
+                "answer": "29 September 2022, 12:01am Colorado standard time"
+            },
+            {
+                "question": "Is there additional boardroom protection in Madison Wax's policy?",
+                "answer": "Yes, Additional Advanced Boardroom and Company Protection: USD 5,000,000 in the aggregate for the policy period"
+            },
+            {
+                "question": "Which courts have jurisdiction over Madison Wax Incorporated's D&O policy?",
+                "answer": "New York courts"
+            }
+        ]
     },
     {
-      "policy_name": "Third Excess Signed Slip - B174010495FS23",
-      "qa_pairs": [
-        {
-          "question": "What is the limit for Altitude Airlines' third excess cyber liability policy?",
-          "answer": "GBP 5,000,000 in the aggregate"
-        },
-        {
-          "question": "What is the attachment point for Altitude Airlines' excess cyber policy?",
-          "answer": "In excess of the Underlying Limit of Liability of GBP 15,000,000"
-        },
-        {
-          "question": "What is the primary retention amount for Altitude Airlines' cyber coverage?",
-          "answer": "Primary Retentions of GBP 5,000,000 each and every claim"
-        },
-        {
-          "question": "When does Altitude Airlines' excess cyber policy period begin and end?",
-          "answer": "1 May 2023 to 30 April 2024 both days inclusive local standard time in the UK"
-        },
-        {
-          "question": "Which law governs Altitude Airlines' third excess cyber policy?",
-          "answer": "Law of England and Wales"
-        }
-      ]
+        "policy_name": "Third Excess Signed Slip - B174010495FS23",
+        "entity": "Altitude Airlines Limited",
+        "qa_pairs": [
+            {
+                "question": "What type of cyber insurance coverage does Altitude Airlines have?",
+                "answer": "Third Excess Cyber Liability Insurance"
+            },
+            {
+                "question": "What is the policy period for Altitude Airlines' excess cyber policy?",
+                "answer": "1 May 2023 to 30 April 2024 both days inclusive local standard time in the UK"
+            },
+            {
+                "question": "What is the limit of Altitude Airlines' third excess cyber policy?",
+                "answer": "GBP 5,000,000 in the aggregate"
+            },
+            {
+                "question": "What is the underlying limit of liability for Altitude Airlines' excess policy?",
+                "answer": "GBP 15,000,000, in turn Excess of any Primary Retentions of GBP 5,000,000 each and every claim"
+            },
+            {
+                "question": "Which country's law applies to Altitude Airlines' excess cyber policy?",
+                "answer": "Law of England and Wales"
+            },
+            {
+                "question": "What is the limit for Altitude Airlines' third excess cyber liability policy?",
+                "answer": "GBP 5,000,000 in the aggregate"
+            },
+            {
+                "question": "What is the attachment point for Altitude Airlines' excess cyber policy?",
+                "answer": "In excess of the Underlying Limit of Liability of GBP 15,000,000"
+            },
+            {
+                "question": "What is the primary retention amount for Altitude Airlines' cyber coverage?",
+                "answer": "Primary Retentions of GBP 5,000,000 each and every claim"
+            },
+            {
+                "question": "When does Altitude Airlines' excess cyber policy period begin and end?",
+                "answer": "1 May 2023 to 30 April 2024 both days inclusive local standard time in the UK"
+            },
+            {
+                "question": "Which law governs Altitude Airlines' third excess cyber policy?",
+                "answer": "Law of England and Wales"
+            }
+        ]
     },
     {
-      "policy_name": "20240813 Placing Slip - liablity_OBFUSCATED",
-      "qa_pairs": [
-        {
-          "question": "What is the occurrence limit for Zenith Enterprises' liability policy?",
-          "answer": "Each \"Occurrence\" (as defined) USD 15,000,000"
-        },
-        {
-          "question": "What is the aggregate limit for Products Liability under Zenith and Apex Oil's policy?",
-          "answer": "Subject to an aggregate limit of \"Products Liability\" and \"Combined Operations Liability\" combined USD 15,000,000"
-        },
-        {
-          "question": "What is the self-insured retention per occurrence for Zenith Enterprises?",
-          "answer": "Self insured retention per \"Occurrence\" USD 250,000"
-        },
-        {
-          "question": "When does Zenith Enterprises and Apex Oil Services' liability coverage begin?",
-          "answer": "1 February 2024, 00:01 CST"
-        },
-        {
-          "question": "Which law applies to Zenith Enterprises' liability policy?",
-          "answer": "New York law, USA Courts jurisdiction"
-        }
-      ]
+        "policy_name": "20240813 Placing Slip - liablity_OBFUSCATED",
+        "entity": "Zenith Enterprises and Apex Oil Services",
+        "qa_pairs": [
+            {
+                "question": "When does the insurance policy for Zenith Enterprises and Apex Oil Services begin and end?",
+                "answer": "1 February 2024 to 1 February 2025, 00:01 CST"
+            },
+            {
+                "question": "What is the occurrence limit for Zenith Enterprises' policy?",
+                "answer": "USD 15,000,000 each Occurrence"
+            },
+            {
+                "question": "What is the aggregate limit for Products Liability for Zenith Enterprises?",
+                "answer": "USD 15,000,000 for Products Liability and Combined Operations Liability combined"
+            },
+            {
+                "question": "What is the self-insured retention per occurrence for Zenith Enterprises?",
+                "answer": "USD 250,000"
+            },
+            {
+                "question": "Which law and courts have jurisdiction over Zenith Enterprises' policy?",
+                "answer": "New York law, USA Courts jurisdiction"
+            },
+            {
+                "question": "What is the occurrence limit for Zenith Enterprises' liability policy?",
+                "answer": "Each \"Occurrence\" (as defined) USD 15,000,000"
+            },
+            {
+                "question": "What is the aggregate limit for Products Liability under Zenith and Apex Oil's policy?",
+                "answer": "Subject to an aggregate limit of \"Products Liability\" and \"Combined Operations Liability\" combined USD 15,000,000"
+            },
+            {
+                "question": "What is the self-insured retention per occurrence for Zenith Enterprises?",
+                "answer": "Self insured retention per \"Occurrence\" USD 250,000"
+            },
+            {
+                "question": "When does Zenith Enterprises and Apex Oil Services' liability coverage begin?",
+                "answer": "1 February 2024, 00:01 CST"
+            },
+            {
+                "question": "Which law applies to Zenith Enterprises' liability policy?",
+                "answer": "New York law, USA Courts jurisdiction"
+            }
+        ]
     },
     {
-      "policy_name": "Primary Slip CT review 030624_OBFUSCATED",
-      "qa_pairs": [
-        {
-          "question": "What is the aggregate limit of indemnity for zorgInc's policy?",
-          "answer": "Aggregate Limit of Indemnity under PARTS ONE, TWO and THREE of this Certificate combined: USD 15,000,000"
-        },
-        {
-          "question": "What is the Single Loss Limit of Indemnity under PARTS ONE and TWO for zorgInc?",
-          "answer": "Single Loss Limit of Indemnity under PARTS ONE and TWO: USD 5,000,000"
-        },
-        {
-          "question": "What is the deductible amount for PART ONE of ZorgGroup's policy?",
-          "answer": "Deductible Amount applicable to each Single Loss: USD 150,000"
-        },
-        {
-          "question": "When does zorgInc's mortgage banking policy coverage period end?",
-          "answer": "11 September 2024 at 12.01 California local standard time"
-        },
-        {
-          "question": "Which jurisdiction's courts handle disputes for zorgInc's policy?",
-          "answer": "Court of a competent jurisdiction within the US"
-        }
-      ]
+        "policy_name": "Primary Slip CT review 030624_OBFUSCATED",
+        "entity": "zorgInc and ZorgGroup",
+        "qa_pairs": [
+            {
+                "question": "What is the policy period for zorgInc and ZorgGroup's insurance?",
+                "answer": "12.01am on 11 September 2023 to 12.01 on 11 September 2024 California local standard time"
+            },
+            {
+                "question": "What is the aggregate limit of indemnity for zorgInc's policy?",
+                "answer": "USD 15,000,000 under PARTS ONE, TWO and THREE of this Certificate combined"
+            },
+            {
+                "question": "What is the single loss limit of indemnity for zorgInc?",
+                "answer": "USD 5,000,000 under PARTS ONE and TWO"
+            },
+            {
+                "question": "What is the deductible amount applicable to each single loss for zorgInc?",
+                "answer": "USD 150,000 under PART ONE"
+            },
+            {
+                "question": "Which jurisdiction applies to zorgInc and ZorgGroup's policy?",
+                "answer": "California Law, Court of a competent jurisdiction within the US"
+            },
+            {
+                "question": "What is the aggregate limit of indemnity for zorgInc's policy?",
+                "answer": "Aggregate Limit of Indemnity under PARTS ONE, TWO and THREE of this Certificate combined: USD 15,000,000"
+            },
+            {
+                "question": "What is the Single Loss Limit of Indemnity under PARTS ONE and TWO for zorgInc?",
+                "answer": "Single Loss Limit of Indemnity under PARTS ONE and TWO: USD 5,000,000"
+            },
+            {
+                "question": "What is the deductible amount for PART ONE of ZorgGroup's policy?",
+                "answer": "Deductible Amount applicable to each Single Loss: USD 150,000"
+            },
+            {
+                "question": "When does zorgInc's mortgage banking policy coverage period end?",
+                "answer": "11 September 2024 at 12.01 California local standard time"
+            },
+            {
+                "question": "Which jurisdiction's courts handle disputes for zorgInc's policy?",
+                "answer": "Court of a competent jurisdiction within the US"
+            }
+        ]
     }
-  ]
+]
