@@ -1,5 +1,5 @@
 """
-LightRAG FastAPI Server
+LightRAG FastAPI Server with Flamingo Integration
 """
 
 from fastapi import FastAPI, Depends, HTTPException, status
@@ -19,11 +19,9 @@ from dotenv import load_dotenv
 from lightrag.api.utils_api import (
     get_api_key_dependency,
     parse_args,
-    get_default_host,
     display_splash_screen,
 )
 from lightrag import LightRAG
-from lightrag.types import GPTKeywordExtractionFormat
 from lightrag.api import __api_version__
 from lightrag.utils import EmbeddingFunc
 from lightrag.api.routers.document_routes import (
@@ -33,7 +31,6 @@ from lightrag.api.routers.document_routes import (
 )
 from lightrag.api.routers.query_routes import create_query_routes
 from lightrag.api.routers.graph_routes import create_graph_routes
-from lightrag.api.routers.ollama_api import OllamaAPI
 
 from lightrag.utils import logger, set_verbose_debug
 from lightrag.kg.shared_storage import (
@@ -45,9 +42,12 @@ from lightrag.kg.shared_storage import (
 from fastapi.security import OAuth2PasswordRequestForm
 from .auth import auth_handler
 
+# Import Flamingo-specific modules
+from flamingo import flamingo_complete_if_cache
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
 # Load environment variables
-# Updated to use the .env that is inside the current folder
-# This update allows the user to put a different.env file for each lightrag folder
 load_dotenv(".env", override=True)
 
 # Initialize config parser
@@ -90,41 +90,60 @@ class LightragPathFilter(logging.Filter):
             return True
 
 
+# Flamingo implementation for LLM
+async def flamingo_llm_model_func(
+    prompt, system_prompt=None, history_messages=None, keyword_extraction=False, **kwargs
+) -> str:
+    if history_messages is None:
+        history_messages = []
+    
+    return await flamingo_complete_if_cache(
+        model=os.getenv("FLAMINGO_MODEL", "llama3"),
+        prompt=prompt,
+        system_prompt=system_prompt,
+        history_messages=history_messages,
+        keyword_extraction=keyword_extraction,
+        subscription_id=os.getenv("SUBSCRIPTION_ID"),
+        base_url=os.getenv("BASE_URL"),
+        client_id=os.getenv("CLIENT_ID"),
+        client_secret=os.getenv("CLIENT_SECRET"),
+        subscription_key=os.getenv("SUBSCRIPTION_KEY"),
+        tenant_id=os.getenv("TENANT_ID"),
+        **kwargs,
+    )
+
+
+# Initialize sentence transformer model once at module level
+_sentence_transformer_model = None
+
+
+def get_sentence_transformer():
+    global _sentence_transformer_model
+    if _sentence_transformer_model is None:
+        _sentence_transformer_model = SentenceTransformer(
+            os.getenv("SENTENCE_TRANSFORMER_MODEL", "all-MiniLM-L6-v2")
+        )
+    return _sentence_transformer_model
+
+
+# Embedding function using SentenceTransformer
+async def embedding_func(texts: list[str]) -> np.ndarray:
+    model = get_sentence_transformer()
+    embeddings = model.encode(texts, convert_to_numpy=True)
+    return embeddings
+
+
+async def get_embedding_dimension():
+    """Determine embedding dimension by encoding a test sentence"""
+    test_text = ["This is a test sentence."]
+    embedding = await embedding_func(test_text)
+    return embedding.shape[1]
+
+
 def create_app(args):
     # Setup logging
     logger.setLevel(args.log_level)
     set_verbose_debug(args.verbose)
-
-    # Verify that bindings are correctly setup
-    if args.llm_binding not in [
-        "lollms",
-        "ollama",
-        "openai",
-        "openai-ollama",
-        "azure_openai",
-    ]:
-        raise Exception("llm binding not supported")
-
-    if args.embedding_binding not in ["lollms", "ollama", "openai", "azure_openai"]:
-        raise Exception("embedding binding not supported")
-
-    # Set default hosts if not provided
-    if args.llm_binding_host is None:
-        args.llm_binding_host = get_default_host(args.llm_binding)
-
-    if args.embedding_binding_host is None:
-        args.embedding_binding_host = get_default_host(args.embedding_binding)
-
-    # Add SSL validation
-    if args.ssl:
-        if not args.ssl_certfile or not args.ssl_keyfile:
-            raise Exception(
-                "SSL certificate and key files must be provided when SSL is enabled"
-            )
-        if not os.path.exists(args.ssl_certfile):
-            raise Exception(f"SSL certificate file not found: {args.ssl_certfile}")
-        if not os.path.exists(args.ssl_keyfile):
-            raise Exception(f"SSL key file not found: {args.ssl_keyfile}")
 
     # Check if API key is provided either through env var or args
     api_key = os.getenv("LIGHTRAG_API_KEY") or args.key
@@ -171,8 +190,8 @@ def create_app(args):
 
     # Initialize FastAPI
     app = FastAPI(
-        title="LightRAG API",
-        description="API for querying text using LightRAG with separate storage and input directories"
+        title="LightRAG API with Flamingo",
+        description="API for querying text using LightRAG with Flamingo LLM integration"
         + "(With authentication)"
         if api_key
         else "",
@@ -182,9 +201,7 @@ def create_app(args):
     )
 
     def get_cors_origins():
-        """Get allowed origins from environment variable
-        Returns a list of allowed origins, defaults to ["*"] if not set
-        """
+        """Get allowed origins from environment variable"""
         origins_str = os.getenv("CORS_ORIGINS", "*")
         if origins_str == "*":
             return ["*"]
@@ -204,174 +221,46 @@ def create_app(args):
 
     # Create working directory if it doesn't exist
     Path(args.working_dir).mkdir(parents=True, exist_ok=True)
-    if args.llm_binding == "lollms" or args.embedding_binding == "lollms":
-        from lightrag.llm.lollms import lollms_model_complete, lollms_embed
-    if args.llm_binding == "ollama" or args.embedding_binding == "ollama":
-        from lightrag.llm.ollama import ollama_model_complete, ollama_embed
-    if args.llm_binding == "openai" or args.embedding_binding == "openai":
-        from lightrag.llm.openai import openai_complete_if_cache, openai_embed
-    if args.llm_binding == "azure_openai" or args.embedding_binding == "azure_openai":
-        from lightrag.llm.azure_openai import (
-            azure_openai_complete_if_cache,
-            azure_openai_embed,
-        )
-    if args.llm_binding_host == "openai-ollama" or args.embedding_binding == "ollama":
-        from lightrag.llm.openai import openai_complete_if_cache
-        from lightrag.llm.ollama import ollama_embed
-
-    async def openai_alike_model_complete(
-        prompt,
-        system_prompt=None,
-        history_messages=None,
-        keyword_extraction=False,
-        **kwargs,
-    ) -> str:
-        keyword_extraction = kwargs.pop("keyword_extraction", None)
-        if keyword_extraction:
-            kwargs["response_format"] = GPTKeywordExtractionFormat
-        if history_messages is None:
-            history_messages = []
-        return await openai_complete_if_cache(
-            args.llm_model,
-            prompt,
-            system_prompt=system_prompt,
-            history_messages=history_messages,
-            base_url=args.llm_binding_host,
-            api_key=args.llm_binding_api_key,
-            **kwargs,
-        )
-
-    async def azure_openai_model_complete(
-        prompt,
-        system_prompt=None,
-        history_messages=None,
-        keyword_extraction=False,
-        **kwargs,
-    ) -> str:
-        keyword_extraction = kwargs.pop("keyword_extraction", None)
-        if keyword_extraction:
-            kwargs["response_format"] = GPTKeywordExtractionFormat
-        if history_messages is None:
-            history_messages = []
-        return await azure_openai_complete_if_cache(
-            args.llm_model,
-            prompt,
-            system_prompt=system_prompt,
-            history_messages=history_messages,
-            base_url=args.llm_binding_host,
-            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-            api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-08-01-preview"),
-            **kwargs,
-        )
-
-    embedding_func = EmbeddingFunc(
-        embedding_dim=args.embedding_dim,
-        max_token_size=args.max_embed_tokens,
-        func=lambda texts: lollms_embed(
-            texts,
-            embed_model=args.embedding_model,
-            host=args.embedding_binding_host,
-            api_key=args.embedding_binding_api_key,
-        )
-        if args.embedding_binding == "lollms"
-        else ollama_embed(
-            texts,
-            embed_model=args.embedding_model,
-            host=args.embedding_binding_host,
-            api_key=args.embedding_binding_api_key,
-        )
-        if args.embedding_binding == "ollama"
-        else azure_openai_embed(
-            texts,
-            model=args.embedding_model,  # no host is used for openai,
-            api_key=args.embedding_binding_api_key,
-        )
-        if args.embedding_binding == "azure_openai"
-        else openai_embed(
-            texts,
-            model=args.embedding_model,
-            base_url=args.embedding_binding_host,
-            api_key=args.embedding_binding_api_key,
+    
+    # Initialize LightRAG with Flamingo and SentenceTransformer
+    embedding_dim = asyncio.run(get_embedding_dimension())
+    logger.info(f"Using embedding dimension: {embedding_dim}")
+    
+    global rag
+    rag = LightRAG(
+        working_dir=args.working_dir,
+        llm_model_func=flamingo_llm_model_func,
+        llm_model_name=os.getenv("FLAMINGO_MODEL", "llama3"),
+        llm_model_max_async=args.max_async,
+        llm_model_max_token_size=args.max_tokens,
+        chunk_token_size=int(args.chunk_size),
+        chunk_overlap_token_size=int(args.chunk_overlap_size),
+        embedding_func=EmbeddingFunc(
+            embedding_dim=embedding_dim,
+            max_token_size=args.max_embed_tokens,
+            func=embedding_func,
         ),
+        kv_storage=args.kv_storage,
+        graph_storage=args.graph_storage,
+        vector_storage=args.vector_storage,
+        doc_status_storage=args.doc_status_storage,
+        vector_db_storage_cls_kwargs={
+            "cosine_better_than_threshold": args.cosine_threshold
+        },
+        enable_llm_cache_for_entity_extract=args.enable_llm_cache_for_extract,
+        embedding_cache_config={
+            "enabled": True,
+            "similarity_threshold": 0.95,
+            "use_llm_check": False,
+        },
+        namespace_prefix=args.namespace_prefix,
+        auto_manage_storages_states=False,
     )
-
-    # Initialize RAG
-    if args.llm_binding in ["lollms", "ollama", "openai"]:
-        rag = LightRAG(
-            working_dir=args.working_dir,
-            llm_model_func=lollms_model_complete
-            if args.llm_binding == "lollms"
-            else ollama_model_complete
-            if args.llm_binding == "ollama"
-            else openai_alike_model_complete,
-            llm_model_name=args.llm_model,
-            llm_model_max_async=args.max_async,
-            llm_model_max_token_size=args.max_tokens,
-            chunk_token_size=int(args.chunk_size),
-            chunk_overlap_token_size=int(args.chunk_overlap_size),
-            llm_model_kwargs={
-                "host": args.llm_binding_host,
-                "timeout": args.timeout,
-                "options": {"num_ctx": args.max_tokens},
-                "api_key": args.llm_binding_api_key,
-            }
-            if args.llm_binding == "lollms" or args.llm_binding == "ollama"
-            else {},
-            embedding_func=embedding_func,
-            kv_storage=args.kv_storage,
-            graph_storage=args.graph_storage,
-            vector_storage=args.vector_storage,
-            doc_status_storage=args.doc_status_storage,
-            vector_db_storage_cls_kwargs={
-                "cosine_better_than_threshold": args.cosine_threshold
-            },
-            enable_llm_cache_for_entity_extract=args.enable_llm_cache_for_extract,
-            embedding_cache_config={
-                "enabled": True,
-                "similarity_threshold": 0.95,
-                "use_llm_check": False,
-            },
-            namespace_prefix=args.namespace_prefix,
-            auto_manage_storages_states=False,
-        )
-    else:  # azure_openai
-        rag = LightRAG(
-            working_dir=args.working_dir,
-            llm_model_func=azure_openai_model_complete,
-            chunk_token_size=int(args.chunk_size),
-            chunk_overlap_token_size=int(args.chunk_overlap_size),
-            llm_model_kwargs={
-                "timeout": args.timeout,
-            },
-            llm_model_name=args.llm_model,
-            llm_model_max_async=args.max_async,
-            llm_model_max_token_size=args.max_tokens,
-            embedding_func=embedding_func,
-            kv_storage=args.kv_storage,
-            graph_storage=args.graph_storage,
-            vector_storage=args.vector_storage,
-            doc_status_storage=args.doc_status_storage,
-            vector_db_storage_cls_kwargs={
-                "cosine_better_than_threshold": args.cosine_threshold
-            },
-            enable_llm_cache_for_entity_extract=args.enable_llm_cache_for_extract,
-            embedding_cache_config={
-                "enabled": True,
-                "similarity_threshold": 0.95,
-                "use_llm_check": False,
-            },
-            namespace_prefix=args.namespace_prefix,
-            auto_manage_storages_states=False,
-        )
 
     # Add routes
     app.include_router(create_document_routes(rag, doc_manager, api_key))
     app.include_router(create_query_routes(rag, api_key, args.top_k))
     app.include_router(create_graph_routes(rag, api_key))
-
-    # Add Ollama API routes
-    ollama_api = OllamaAPI(rag, top_k=args.top_k)
-    app.include_router(ollama_api.router, prefix="/api")
 
     @app.post("/login")
     async def login(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -405,14 +294,8 @@ def create_app(args):
             "working_directory": str(args.working_dir),
             "input_directory": str(args.input_dir),
             "configuration": {
-                # LLM configuration binding/host address (if applicable)/model (if applicable)
-                "llm_binding": args.llm_binding,
-                "llm_binding_host": args.llm_binding_host,
-                "llm_model": args.llm_model,
-                # embedding model configuration binding/host address (if applicable)/model (if applicable)
-                "embedding_binding": args.embedding_binding,
-                "embedding_binding_host": args.embedding_binding_host,
-                "embedding_model": args.embedding_model,
+                "llm_model": os.getenv("FLAMINGO_MODEL", "llama3"),
+                "embedding_model": os.getenv("SENTENCE_TRANSFORMER_MODEL", "all-MiniLM-L6-v2"),
                 "max_tokens": args.max_tokens,
                 "kv_storage": args.kv_storage,
                 "doc_status_storage": args.doc_status_storage,
@@ -444,7 +327,6 @@ def get_application(args=None):
 
 def configure_logging():
     """Configure logging for uvicorn startup"""
-
     # Reset any existing handlers to ensure clean configuration
     for logger_name in ["uvicorn", "uvicorn.access", "uvicorn.error", "lightrag"]:
         logger = logging.getLogger(logger_name)
@@ -490,7 +372,6 @@ def configure_logging():
                 },
             },
             "loggers": {
-                # Configure all uvicorn related loggers
                 "uvicorn": {
                     "handlers": ["console", "file"],
                     "level": "INFO",
@@ -529,6 +410,7 @@ def check_and_install_dependencies():
         "uvicorn",
         "tiktoken",
         "fastapi",
+        "sentence-transformers",
         # Add other required packages here
     ]
 
