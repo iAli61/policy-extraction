@@ -1,34 +1,88 @@
 import os
 import asyncio
 import numpy as np
+import logging
 from flamingo_client import FlamingoLLMClient, AsyncFlamingoLLMClient
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+)
+from lightrag.utils import (
+    verbose_debug,
+    VERBOSE_DEBUG,
+    wrap_embedding_func_with_attrs,
+    locate_json_string_body_from_string,
+    safe_unicode_decode,
+    logger,
+)
+from lightrag.api import __api_version__
 
-WORKING_DIR = "./dickens"
+# Custom exceptions to match OpenAI client behavior
+class FlamingoAPIConnectionError(Exception):
+    """Custom exception for connection errors"""
+    pass
 
-if not os.path.exists(WORKING_DIR):
-    os.mkdir(WORKING_DIR)
+class FlamingoRateLimitError(Exception):
+    """Custom exception for rate limiting"""
+    pass
 
+class FlamingoAPITimeoutError(Exception):
+    """Custom exception for timeouts"""
+    pass
+
+class InvalidResponseError(Exception):
+    """Custom exception class for triggering retry mechanism"""
+    pass
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    retry=retry_if_exception_type(
+        (FlamingoRateLimitError, FlamingoAPIConnectionError, FlamingoAPITimeoutError, InvalidResponseError)
+    ),
+)
 async def flamingo_complete_if_cache(
     model: str,
     prompt: str,
-    system_prompt: str = None,
-    history_messages: list[dict] = None,
-    api_key: str = None,
-    base_url: str = None,
-    **kwargs,
-) -> str:
+    system_prompt: str | None = None,
+    history_messages: list[dict] | None = None,
+    base_url: str | None = None,
+    subscription_id: str | None = None,
+    client_id: str | None = None,
+    client_secret: str | None = None,
+    subscription_key: str | None = None,
+    tenant_id: str | None = None,
+    keyword_extraction: bool = False,
+    **kwargs: Any,
+) -> Union[str, AsyncIterator[str]]:
     if history_messages is None:
         history_messages = []
     
-    # Create client
-    client = AsyncFlamingoLLMClient(
-        subscription_id=os.getenv("SUBSCRIPTION_ID"),
-        base_url=base_url or "https://api.flamingo.ai/v1",
-        client_id=os.getenv("CLIENT_ID"),
-        client_secret=os.getenv("CLIENT_SECRET"),
-        subscription_key=os.getenv("SUBSCRIPTION_KEY"),
-        tenant=os.getenv("TENANT"),
-    )
+    # Remove params not supported by Flamingo API
+    kwargs.pop("hashing_kv", None)
+    keyword_extraction = kwargs.pop("keyword_extraction", None)
+    
+
+    
+    # Set Flamingo logger level to INFO when VERBOSE_DEBUG is off
+    if not VERBOSE_DEBUG and logger.level == logging.DEBUG:
+        logging.getLogger("flamingo_client").setLevel(logging.INFO)
+    
+    # Create client with proper authentication
+    try:
+        client = AsyncFlamingoLLMClient(
+            subscription_id=subscription_id or os.getenv("SUBSCRIPTION_ID", ""),
+            base_url=base_url or os.getenv("BASE_URL", ""),
+            client_id=client_id or os.getenv("CLIENT_ID", ""),
+            client_secret=client_secret or os.getenv("CLIENT_SECRET", ""),
+            subscription_key=subscription_key or os.getenv("SUBSCRIPTION_KEY", ""),
+            tenant=tenant_id or os.getenv("TENANT_ID", ""),
+        )
+    except Exception as e:
+        logger.error(f"Failed to initialize Flamingo client: {e}")
+        raise FlamingoAPIConnectionError(f"Failed to initialize Flamingo client: {e}")
 
     # Construct messages
     messages = []
@@ -37,30 +91,101 @@ async def flamingo_complete_if_cache(
     messages.extend(history_messages)
     messages.append({"role": "user", "content": prompt})
 
-    # Make API call
-    response = await client.chat.completions.create(
-        model=model,
-        messages=messages,
-        **kwargs,
-    )
+    # Logging similar to OpenAI client
+    logger.debug("===== Sending Query to Flamingo LLM =====")
+    logger.debug(f"Model: {model}   Base URL: {base_url}")
+    logger.debug(f"Additional kwargs: {kwargs}")
+    verbose_debug(f"Query: {prompt}")
+    verbose_debug(f"System prompt: {system_prompt}")
 
-    if not response or not response.choices:
-        raise Exception("Invalid response from Flamingo API")
 
-    return response.choices[0].message.content
 
+    # Make API call with proper error handling
+    try:
+        response = await client.chat.completions.create(
+            model=model,
+            messages=messages,
+            **kwargs,
+        )
+    except Exception as e:
+        error_str = str(e)
+        if "connection" in error_str.lower():
+            logger.error(f"Flamingo API Connection Error: {e}")
+            raise FlamingoAPIConnectionError(str(e))
+        elif "rate" in error_str.lower() or "limit" in error_str.lower():
+            logger.error(f"Flamingo API Rate Limit Error: {e}")
+            raise FlamingoRateLimitError(str(e))
+        elif "timeout" in error_str.lower():
+            logger.error(f"Flamingo API Timeout Error: {e}")
+            raise FlamingoAPITimeoutError(str(e))
+        else:
+            logger.error(
+                f"Flamingo API Call Failed,\nModel: {model},\nParams: {kwargs}, Got: {e}"
+            )
+            raise
+
+    # Handle streaming responses
+    if hasattr(response, "__aiter__"):
+        async def inner():
+            try:
+                async for chunk in response:
+                    content = chunk.choices[0].delta.content
+                    if content is None:
+                        continue
+                    if r"\u" in content:
+                        content = safe_unicode_decode(content.encode("utf-8"))
+                    yield content
+            except Exception as e:
+                logger.error(f"Error in stream response: {str(e)}")
+                raise
+        return inner()
+    else:
+        # Handle regular responses
+        if (
+            not response
+            or not response.choices
+            or len(response.choices) == 0
+            or not hasattr(response.choices[0], "message")
+            or not hasattr(response.choices[0].message, "content")
+        ):
+            logger.error("Invalid response from Flamingo API")
+            raise InvalidResponseError("Invalid response from Flamingo API")
+
+        content = response.choices[0].message.content
+
+        if not content or content.strip() == "":
+            logger.error("Received empty content from Flamingo API")
+            raise InvalidResponseError("Received empty content from Flamingo API")
+
+        # Handle unicode escapes
+        if r"\u" in content:
+            content = safe_unicode_decode(content.encode("utf-8"))
+            
+        # Handle keyword extraction if enabled
+        if keyword_extraction:
+            content = locate_json_string_body_from_string(content)
+            
+        return content
+
+@wrap_embedding_func_with_attrs(embedding_dim=1536, max_token_size=8192)
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=60),
+    retry=retry_if_exception_type(
+        (FlamingoRateLimitError, FlamingoAPIConnectionError, FlamingoAPITimeoutError)
+    ),
+)
 async def flamingo_embed(
     texts: list[str],
-    model: str = None,
-    api_key: str = None,
+    model: str = "flamingo-embedding-model",  # Update with actual model name
     base_url: str = None,
-    **kwargs
+    api_key: str = None,
 ) -> np.ndarray:
     """
     Get embeddings for the provided texts using the Flamingo API.
     
-    Note: If Flamingo doesn't support embeddings directly, you might need
-    to use a different service or approach for embeddings.
+    Note: Implementation depends on whether Flamingo supports embeddings directly.
+    If not, this function needs to be modified or removed.
     """
     # Since Flamingo client doesn't support embeddings as shown in the code,
     # this is a placeholder. You might need to implement this differently

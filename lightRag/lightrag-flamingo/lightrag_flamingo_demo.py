@@ -1,6 +1,6 @@
 import os
 import asyncio
-from flamingo_client import AsyncFlamingoLLMClient
+from flamingo import flamingo_complete_if_cache # Importing the flamingo_complete_if_cache function
 from lightrag.utils import EmbeddingFunc
 from lightrag import LightRAG, QueryParam
 import numpy as np
@@ -17,20 +17,21 @@ if not os.path.exists(WORKING_DIR):
 
 
 async def flamingo_llm_model_func(
-    prompt, system_prompt=None, history_messages=[], **kwargs
+    prompt, system_prompt=None, history_messages=[], keyword_extraction=False, **kwargs
 ) -> str:
-    client = AsyncFlamingoLLMClient(
+    return await flamingo_complete_if_cache(
+        model="llama3",
+        prompt=prompt,
+        system_prompt=system_prompt,
+        history_messages=history_messages,
+        keyword_extraction=keyword_extraction,
+        api_key=os.getenv("API_KEY"),
         subscription_id=os.getenv("SUBSCRIPTION_ID"),
         base_url=os.getenv("BASE_URL"),
         client_id=os.getenv("CLIENT_ID"),
         client_secret=os.getenv("CLIENT_SECRET"),
         subscription_key=os.getenv("SUBSCRIPTION_KEY"),
         tenant=os.getenv("TENANT_ID"),
-    )
-    return await client.chat.completions.create(
-        model="llama3",
-        messages=[{"role": "user", "content": prompt}],
-        **kwargs,
     )
 
 
