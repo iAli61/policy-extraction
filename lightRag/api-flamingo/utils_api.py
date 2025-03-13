@@ -1,5 +1,5 @@
 """
-Utility functions for the LightRAG API.
+Utility functions for the LightRAG API with Flamingo integration.
 """
 
 import os
@@ -96,18 +96,6 @@ class DefaultRAGStorageConfig:
     DOC_STATUS_STORAGE = "JsonDocStatusStorage"
 
 
-def get_default_host(binding_type: str) -> str:
-    default_hosts = {
-        "ollama": os.getenv("LLM_BINDING_HOST", "http://localhost:11434"),
-        "lollms": os.getenv("LLM_BINDING_HOST", "http://localhost:9600"),
-        "azure_openai": os.getenv("AZURE_OPENAI_ENDPOINT", "https://api.openai.com/v1"),
-        "openai": os.getenv("LLM_BINDING_HOST", "https://api.openai.com/v1"),
-    }
-    return default_hosts.get(
-        binding_type, os.getenv("LLM_BINDING_HOST", "http://localhost:11434")
-    )  # fallback to ollama if unknown
-
-
 def get_env_value(env_key: str, default: any, value_type: type = str) -> any:
     """
     Get value from environment variable with type conversion
@@ -144,7 +132,7 @@ def parse_args(is_uvicorn_mode: bool = False) -> argparse.Namespace:
     """
 
     parser = argparse.ArgumentParser(
-        description="LightRAG FastAPI Server with separate working and input directories"
+        description="LightRAG FastAPI Server with Flamingo integration"
     )
 
     # Server configuration
@@ -257,17 +245,17 @@ def parse_args(is_uvicorn_mode: bool = False) -> argparse.Namespace:
         "--cosine-threshold",
         type=float,
         default=get_env_value("COSINE_THRESHOLD", 0.2, float),
-        help="Cosine similarity threshold (default: from env or 0.4)",
+        help="Cosine similarity threshold (default: from env or 0.2)",
     )
 
-    # Ollama model name
+    # Simulated model name for compatibility
     parser.add_argument(
         "--simulated-model-name",
         type=str,
         default=get_env_value(
             "SIMULATED_MODEL_NAME", ollama_server_infos.LIGHTRAG_MODEL
         ),
-        help="Number of conversation history turns to include (default: from env or 3)",
+        help="Simulated model name for compatibility with other clients",
     )
 
     # Namespace
@@ -281,7 +269,7 @@ def parse_args(is_uvicorn_mode: bool = False) -> argparse.Namespace:
     parser.add_argument(
         "--auto-scan-at-startup",
         action="store_true",
-        default=False,
+        default=get_env_value("AUTO_SCAN_AT_STARTUP", False, bool),
         help="Enable automatic scanning when the program starts",
     )
 
@@ -293,20 +281,20 @@ def parse_args(is_uvicorn_mode: bool = False) -> argparse.Namespace:
         help="Number of worker processes (default: from env or 1)",
     )
 
-    # LLM and embedding bindings
+    # Flamingo configuration
     parser.add_argument(
-        "--llm-binding",
+        "--flamingo-model",
         type=str,
-        default=get_env_value("LLM_BINDING", "ollama"),
-        choices=["lollms", "ollama", "openai", "openai-ollama", "azure_openai"],
-        help="LLM binding type (default: from env or ollama)",
+        default=get_env_value("FLAMINGO_MODEL", "llama3"),
+        help="Flamingo model name (default: from env or llama3)",
     )
+
+    # SentenceTransformer configuration
     parser.add_argument(
-        "--embedding-binding",
+        "--sentence-transformer-model",
         type=str,
-        default=get_env_value("EMBEDDING_BINDING", "ollama"),
-        choices=["lollms", "ollama", "openai", "azure_openai"],
-        help="Embedding binding type (default: from env or ollama)",
+        default=get_env_value("SENTENCE_TRANSFORMER_MODEL", "all-MiniLM-L6-v2"),
+        help="SentenceTransformer model name (default: from env or all-MiniLM-L6-v2)",
     )
 
     args = parser.parse_args()
@@ -338,24 +326,12 @@ def parse_args(is_uvicorn_mode: bool = False) -> argparse.Namespace:
         "LIGHTRAG_VECTOR_STORAGE", DefaultRAGStorageConfig.VECTOR_STORAGE
     )
 
-    # Handle openai-ollama special case
-    if args.llm_binding == "openai-ollama":
-        args.llm_binding = "openai"
-        args.embedding_binding = "ollama"
-
-    args.llm_binding_host = get_env_value(
-        "LLM_BINDING_HOST", get_default_host(args.llm_binding)
-    )
-    args.embedding_binding_host = get_env_value(
-        "EMBEDDING_BINDING_HOST", get_default_host(args.embedding_binding)
-    )
-    args.llm_binding_api_key = get_env_value("LLM_BINDING_API_KEY", None)
-    args.embedding_binding_api_key = get_env_value("EMBEDDING_BINDING_API_KEY", "")
-
-    # Inject model configuration
-    args.llm_model = get_env_value("LLM_MODEL", "mistral-nemo:latest")
-    args.embedding_model = get_env_value("EMBEDDING_MODEL", "bge-m3:latest")
-    args.embedding_dim = get_env_value("EMBEDDING_DIM", 1024, int)
+    # For backward compatibility, map these to Flamingo
+    args.llm_model = args.flamingo_model
+    args.embedding_model = args.sentence_transformer_model
+    
+    # For embedding configuration
+    args.embedding_dim = get_env_value("EMBEDDING_DIM", 384, int)  # MiniLM-L6-v2 has 384 dimensions by default
     args.max_embed_tokens = get_env_value("MAX_EMBED_TOKENS", 8192, int)
 
     # Inject chunk configuration
@@ -370,6 +346,7 @@ def parse_args(is_uvicorn_mode: bool = False) -> argparse.Namespace:
     # Select Document loading tool (DOCLING, DEFAULT)
     args.document_loading_engine = get_env_value("DOCUMENT_LOADING_ENGINE", "DEFAULT")
 
+    # Update the ollama server info with the model name (for compatibility)
     ollama_server_infos.LIGHTRAG_MODEL = args.simulated_model_name
 
     global_args["main_args"] = args
@@ -378,7 +355,7 @@ def parse_args(is_uvicorn_mode: bool = False) -> argparse.Namespace:
 
 def display_splash_screen(args: argparse.Namespace) -> None:
     """
-    Display a colorful splash screen showing LightRAG server configuration
+    Display a colorful splash screen showing LightRAG server configuration with Flamingo
 
     Args:
         args: Parsed command line arguments
@@ -386,8 +363,8 @@ def display_splash_screen(args: argparse.Namespace) -> None:
     # Banner
     ASCIIColors.cyan(f"""
     ╔══════════════════════════════════════════════════════════════╗
-    ║                   🚀 LightRAG Server v{__api_version__}                  ║
-    ║          Fast, Lightweight RAG Server Implementation         ║
+    ║                🚀 LightRAG Flamingo Server v{__api_version__}               ║
+    ║         Fast, Lightweight RAG Server with Flamingo LLM       ║
     ╚══════════════════════════════════════════════════════════════╝
     """)
 
@@ -408,8 +385,6 @@ def display_splash_screen(args: argparse.Namespace) -> None:
         ASCIIColors.yellow(f"{args.ssl_certfile}")
         ASCIIColors.white("    ├─ SSL Key: ", end="")
         ASCIIColors.yellow(f"{args.ssl_keyfile}")
-    ASCIIColors.white("    ├─ Ollama Emulating Model: ", end="")
-    ASCIIColors.yellow(f"{ollama_server_infos.LIGHTRAG_MODEL}")
     ASCIIColors.white("    ├─ Log Level: ", end="")
     ASCIIColors.yellow(f"{args.log_level}")
     ASCIIColors.white("    ├─ Verbose Debug: ", end="")
@@ -426,23 +401,27 @@ def display_splash_screen(args: argparse.Namespace) -> None:
     ASCIIColors.white("    └─ Input Directory: ", end="")
     ASCIIColors.yellow(f"{args.input_dir}")
 
-    # LLM Configuration
-    ASCIIColors.magenta("\n🤖 LLM Configuration:")
-    ASCIIColors.white("    ├─ Binding: ", end="")
-    ASCIIColors.yellow(f"{args.llm_binding}")
-    ASCIIColors.white("    ├─ Host: ", end="")
-    ASCIIColors.yellow(f"{args.llm_binding_host}")
-    ASCIIColors.white("    └─ Model: ", end="")
-    ASCIIColors.yellow(f"{args.llm_model}")
-
-    # Embedding Configuration
-    ASCIIColors.magenta("\n📊 Embedding Configuration:")
-    ASCIIColors.white("    ├─ Binding: ", end="")
-    ASCIIColors.yellow(f"{args.embedding_binding}")
-    ASCIIColors.white("    ├─ Host: ", end="")
-    ASCIIColors.yellow(f"{args.embedding_binding_host}")
+    # Flamingo LLM Configuration
+    ASCIIColors.magenta("\n🦩 Flamingo LLM Configuration:")
     ASCIIColors.white("    ├─ Model: ", end="")
-    ASCIIColors.yellow(f"{args.embedding_model}")
+    ASCIIColors.yellow(f"{args.flamingo_model}")
+    ASCIIColors.white("    ├─ Subscription ID: ", end="")
+    ASCIIColors.yellow(f"{os.getenv('SUBSCRIPTION_ID', 'Not Set')}")
+    ASCIIColors.white("    ├─ Base URL: ", end="")
+    ASCIIColors.yellow(f"{os.getenv('BASE_URL', 'Not Set')}")
+    ASCIIColors.white("    ├─ Client ID: ", end="")
+    ASCIIColors.yellow("Set" if os.getenv('CLIENT_ID') else "Not Set")
+    ASCIIColors.white("    ├─ Client Secret: ", end="")
+    ASCIIColors.yellow("Set" if os.getenv('CLIENT_SECRET') else "Not Set")
+    ASCIIColors.white("    ├─ Subscription Key: ", end="")
+    ASCIIColors.yellow("Set" if os.getenv('SUBSCRIPTION_KEY') else "Not Set")
+    ASCIIColors.white("    └─ Tenant ID: ", end="")
+    ASCIIColors.yellow("Set" if os.getenv('TENANT_ID') else "Not Set")
+
+    # SentenceTransformer Configuration
+    ASCIIColors.magenta("\n📊 Embedding Configuration:")
+    ASCIIColors.white("    ├─ Model: ", end="")
+    ASCIIColors.yellow(f"{args.sentence_transformer_model}")
     ASCIIColors.white("    └─ Dimensions: ", end="")
     ASCIIColors.yellow(f"{args.embedding_dim}")
 
