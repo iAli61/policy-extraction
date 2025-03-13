@@ -121,7 +121,7 @@ def get_sentence_transformer():
     global _sentence_transformer_model
     if _sentence_transformer_model is None:
         _sentence_transformer_model = SentenceTransformer(
-            os.getenv("SENTENCE_TRANSFORMER_MODEL", "all-MiniLM-L6-v2")
+            os.getenv("SENTENCE_TRANSFORMER_MODEL", "all-mpnet-base-v2")
         )
     return _sentence_transformer_model
 
