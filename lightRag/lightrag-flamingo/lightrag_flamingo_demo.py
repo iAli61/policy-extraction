@@ -32,6 +32,7 @@ async def flamingo_llm_model_func(
         client_secret=os.getenv("CLIENT_SECRET"),
         subscription_key=os.getenv("SUBSCRIPTION_KEY"),
         tenant=os.getenv("TENANT_ID"),
+        **kwargs,
     )
 
 

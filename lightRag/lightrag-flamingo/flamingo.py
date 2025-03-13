@@ -2,7 +2,7 @@ import os
 import asyncio
 import numpy as np
 import logging
-from flamingo_client import FlamingoLLMClient, AsyncFlamingoLLMClient
+from flamingo_client import FlamingoLLMClient, AsyncFlamingoLLMClient, AuthException
 from tenacity import (
     retry,
     stop_after_attempt,
@@ -18,6 +18,13 @@ from lightrag.utils import (
     logger,
 )
 from lightrag.api import __api_version__
+from typing import Any, Union
+import sys
+
+if sys.version_info < (3, 9):
+    from typing import AsyncIterator
+else:
+    from collections.abc import AsyncIterator
 
 # Custom exceptions to match OpenAI client behavior
 class FlamingoAPIConnectionError(Exception):
@@ -40,14 +47,14 @@ class InvalidResponseError(Exception):
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=4, max=10),
     retry=retry_if_exception_type(
-        (FlamingoRateLimitError, FlamingoAPIConnectionError, FlamingoAPITimeoutError, InvalidResponseError)
+        (FlamingoRateLimitError, FlamingoAPIConnectionError, FlamingoAPITimeoutError, InvalidResponseError, AuthException)
     ),
 )
 async def flamingo_complete_if_cache(
     model: str,
     prompt: str,
     system_prompt: str | None = None,
-    history_messages: list[dict] | None = None,
+    history_messages: list[dict[str, Any]] | None = None,
     base_url: str | None = None,
     subscription_id: str | None = None,
     client_id: str | None = None,
@@ -60,19 +67,19 @@ async def flamingo_complete_if_cache(
     if history_messages is None:
         history_messages = []
     
-    # Remove params not supported by Flamingo API
-    kwargs.pop("hashing_kv", None)
-    keyword_extraction = kwargs.pop("keyword_extraction", None)
-    
-
+    # Set default headers similar to OpenAI client
+    default_headers = {
+        "User-Agent": f"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_8) LightRAG/{__api_version__}",
+        "Content-Type": "application/json",
+    }
     
     # Set Flamingo logger level to INFO when VERBOSE_DEBUG is off
     if not VERBOSE_DEBUG and logger.level == logging.DEBUG:
         logging.getLogger("flamingo_client").setLevel(logging.INFO)
     
-    # Create client with proper authentication
+    # Create async client with proper authentication - similar to OpenAI pattern
     try:
-        client = AsyncFlamingoLLMClient(
+        flamingo_async_client = AsyncFlamingoLLMClient(
             subscription_id=subscription_id or os.getenv("SUBSCRIPTION_ID", ""),
             base_url=base_url or os.getenv("BASE_URL", ""),
             client_id=client_id or os.getenv("CLIENT_ID", ""),
@@ -84,6 +91,10 @@ async def flamingo_complete_if_cache(
         logger.error(f"Failed to initialize Flamingo client: {e}")
         raise FlamingoAPIConnectionError(f"Failed to initialize Flamingo client: {e}")
 
+    # Handle parameters not used by Flamingo API
+    kwargs.pop("hashing_kv", None)
+    keyword_extraction = kwargs.pop("keyword_extraction", None)
+    
     # Construct messages
     messages = []
     if system_prompt:
@@ -98,15 +109,21 @@ async def flamingo_complete_if_cache(
     verbose_debug(f"Query: {prompt}")
     verbose_debug(f"System prompt: {system_prompt}")
 
-
-
     # Make API call with proper error handling
     try:
-        response = await client.chat.completions.create(
-            model=model,
-            messages=messages,
-            **kwargs,
-        )
+        # Handle response_format parameter similar to OpenAI
+        if "response_format" in kwargs:
+            # Flamingo implements the response_format parameter directly in chat.completions.create
+            response = await flamingo_async_client.chat.completions.create(
+                model=model, messages=messages, **kwargs
+            )
+        else:
+            response = await flamingo_async_client.chat.completions.create(
+                model=model, messages=messages, **kwargs
+            )
+    except AuthException as e:
+        logger.error(f"Flamingo Authentication Error: {e}")
+        raise FlamingoAPIConnectionError(f"Authentication error: {e}")
     except Exception as e:
         error_str = str(e)
         if "connection" in error_str.lower():
