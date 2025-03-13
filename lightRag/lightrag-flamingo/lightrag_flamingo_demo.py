@@ -9,13 +9,13 @@ from sentence_transformers import SentenceTransformer
 from lightrag.utils import logger, set_verbose_debug
 
 WORKING_DIR = "./test"
+model_name="llama3"
 from dotenv import load_dotenv
 load_dotenv()
 
 if not os.path.exists(WORKING_DIR):
     os.mkdir(WORKING_DIR)
 
-model_name="llama3"
 
 async def flamingo_llm_model_func(
     prompt, system_prompt=None, history_messages=[], keyword_extraction=False, **kwargs
@@ -37,7 +37,7 @@ async def flamingo_llm_model_func(
 
 
 async def embedding_func(texts: list[str]) -> np.ndarray:
-    model = SentenceTransformer("all-mpnet-base-v2")
+    model = SentenceTransformer("all-MiniLM-L6-v2")
     embeddings = model.encode(texts, convert_to_numpy=True)
     return embeddings
 
