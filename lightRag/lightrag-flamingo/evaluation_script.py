@@ -22,7 +22,12 @@ MODES = ["local", "global", "hybrid", "naive", "mix"]
 TOP_KS = [10, 20, 60]
 RESPONSE_TYPE = "Single Paragraph"
 MARKDOWN_DIR = "./markdown_files"
-OUTPUT_FILE = f"./evaluation_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+dir_path = "./evaluation_results_storage"
+if not os.path.exists(dir_path):
+    os.mkdir(dir_path)
+
+OUTPUT_FILE = f"./{dir_path}/evaluation_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
 
 async def evaluate_lightrag():
     try:
@@ -32,7 +37,7 @@ async def evaluate_lightrag():
         logger.info(f"Loaded {sum(len(q) for q in questions_data.values())} questions across {len(questions_data)} categories")
         
         # Load policies (ground truth)
-        with open("./Docs/policies.json", "r") as f:
+        with open("./Docs/policies.json", "r", encoding='utf-8') as f:
             policies = json.load(f)
         logger.info(f"Loaded {len(policies)} policies with ground truth data")
         
@@ -53,6 +58,9 @@ async def evaluate_lightrag():
         for policy in tqdm(policies, desc="Processing policies"):
             policy_name = policy["name"]
             markdown_file = os.path.join(MARKDOWN_DIR, f"{policy_name}.md")
+            working_dir = f"./{dir_path}/{policy_name}"
+            if not os.path.exists(working_dir):
+                os.mkdir(working_dir)
             
             # Skip if markdown file doesn't exist
             if not os.path.exists(markdown_file):
@@ -87,6 +95,7 @@ async def evaluate_lightrag():
                                 
                                 # Run LightRAG
                                 response = await run_lightrag(
+                                    working_dir=working_dir,
                                     file_path=markdown_file,
                                     query=question,
                                     mode=mode,

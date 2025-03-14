@@ -37,7 +37,7 @@ async def flamingo_llm_model_func(
 
 
 async def embedding_func(texts: list[str]) -> np.ndarray:
-    model = SentenceTransformer("all-MiniLM-L6-v2")
+    model = SentenceTransformer("all-mpnet-base-v2")
     embeddings = model.encode(texts, convert_to_numpy=True)
     return embeddings
 
@@ -58,12 +58,12 @@ async def test_funcs():
     print("flamingo_embedding_func: ", result)
 
 
-async def initialize_flamingo_rag():
+async def initialize_flamingo_rag(working_dir=WORKING_DIR):
     embedding_dimension = await get_embedding_dim()
     print(f"Detected embedding dimension: {embedding_dimension}")
 
     rag = LightRAG(
-        working_dir=WORKING_DIR,
+        working_dir=working_dir,
         llm_model_func=flamingo_llm_model_func,
         llm_model_name=model_name,
         embedding_func=EmbeddingFunc(
@@ -79,19 +79,21 @@ async def initialize_flamingo_rag():
     return rag
 
 
-async def run_lightrag(file_path:str = "./markdown_files/20241119Placing Slip.md",
-                       query:str = "What are the top themes in this story?",
-                       mode:str = "naive",
-                       top_k:int = 10,
-                       response_type:str = "Single Paragraph",
-                       ):
+async def run_lightrag(
+        working_dir: str = WORKING_DIR,
+        file_path:str = "./markdown_files/20241119Placing Slip.md",
+        query:str = "What are the top themes in this story?",
+        mode:str = "naive",
+        top_k:int = 10,
+        response_type:str = "Single Paragraph",
+        ):
     # Setup logging
     logger.setLevel("DEBUG")
     set_verbose_debug(True)
     await test_funcs()
     try:
         # Initialize RAG instance
-        rag = await initialize_flamingo_rag()
+        rag = await initialize_flamingo_rag(working_dir)
 
         with open(file_path, "r", encoding="utf-8") as f:
             await rag.ainsert(f.read())
@@ -106,4 +108,8 @@ async def run_lightrag(file_path:str = "./markdown_files/20241119Placing Slip.md
         
     except Exception as e:
         print(f"An error occurred: {e}")
+
+
+if __name__ == "__main__":
+    asyncio.run(run_lightrag())
 
