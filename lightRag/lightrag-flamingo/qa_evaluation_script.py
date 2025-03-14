@@ -6,12 +6,16 @@ from datetime import datetime
 from tqdm import tqdm
 from lightrag_flamingo import run_lightrag
 
+dir_path = f"./qa_evaluation_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+if not os.path.exists(dir_path):
+    os.mkdir(dir_path)
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(f"qa_lightrag_eval_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"),
+        logging.FileHandler(f"./{dir_path}/lightrag_eval.log"),
         logging.StreamHandler()
     ]
 )
@@ -23,7 +27,8 @@ TOP_KS = [10, 20, 60]
 RESPONSE_TYPE = "Single Paragraph"
 MARKDOWN_DIR = "./markdown_files"
 
-dir_path = "./qa_evaluation_results"
+OUTPUT_FILE = f"./{dir_path}/evaluation_results.json"
+
 if not os.path.exists(dir_path):
     os.mkdir(dir_path)
 
