@@ -77,7 +77,7 @@ async def evaluate_qa_lightrag():
                             logger.debug(f"Running query on {policy_name} with mode={mode}, top_k={top_k}")
                             
                             # Run LightRAG
-                            response = await run_lightrag(
+                            response, context = await run_lightrag(
                                 working_dir=working_dir,
                                 file_path=markdown_file,
                                 query=question,
@@ -92,6 +92,7 @@ async def evaluate_qa_lightrag():
                                 "entity": entity,
                                 "question": question,
                                 "response": response,
+                                "context": context,
                                 "ground_truth": ground_truth,
                                 "mode": mode,
                                 "top_k": top_k,

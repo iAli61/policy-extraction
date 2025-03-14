@@ -106,7 +106,14 @@ async def run_lightrag(
             )
         print(answer)
 
-        return answer
+        context = await rag.aquery(query, param=QueryParam(
+                    mode=mode,
+                    only_need_context=True,
+                    top_k=top_k
+                    )
+            )
+
+        return answer, context
         
     except Exception as e:
         print(f"An error occurred: {e}")
