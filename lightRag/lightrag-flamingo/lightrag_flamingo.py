@@ -105,6 +105,8 @@ async def run_lightrag(
                     )
             )
         print(answer)
+
+        return answer
         
     except Exception as e:
         print(f"An error occurred: {e}")

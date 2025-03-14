@@ -4,7 +4,7 @@ import asyncio
 import logging
 from datetime import datetime
 from tqdm import tqdm
-from lightrag_flamingo_demo import run_lightrag
+from lightrag_flamingo import run_lightrag
 
 # Configure logging
 logging.basicConfig(
