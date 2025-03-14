@@ -42,6 +42,8 @@ from lightrag.kg.shared_storage import (
 from fastapi.security import OAuth2PasswordRequestForm
 from .auth import auth_handler
 
+from lightrag.types import GPTKeywordExtractionFormat
+
 # Import Flamingo-specific modules
 from flamingo import flamingo_complete_if_cache
 import numpy as np
@@ -94,6 +96,9 @@ class LightragPathFilter(logging.Filter):
 async def flamingo_llm_model_func(
     prompt, system_prompt=None, history_messages=None, keyword_extraction=False, **kwargs
 ) -> str:
+    keyword_extraction = kwargs.pop("keyword_extraction", None)
+    if keyword_extraction:
+        kwargs["response_format"] = GPTKeywordExtractionFormat
     if history_messages is None:
         history_messages = []
     

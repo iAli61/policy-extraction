@@ -79,7 +79,12 @@ async def initialize_flamingo_rag():
     return rag
 
 
-async def main():
+async def run_lightrag(file_path:str = "./markdown_files/20241119Placing Slip.md",
+                       query:str = "What are the top themes in this story?",
+                       mode:str = "naive",
+                       top_k:int = 10,
+                       response_type:str = "Single Paragraph",
+                       ):
     # Setup logging
     logger.setLevel("DEBUG")
     set_verbose_debug(True)
@@ -88,41 +93,17 @@ async def main():
         # Initialize RAG instance
         rag = await initialize_flamingo_rag()
 
-        with open("./markdown_files/20241119Placing Slip.md", "r", encoding="utf-8") as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             await rag.ainsert(f.read())
 
-        # Perform naive search
-        print(
-            await rag.aquery(
-                "What are the top themes in this story?", param=QueryParam(mode="naive")
+        answer = await rag.aquery(query, param=QueryParam(
+                    mode=mode,
+                    response_type=response_type,
+                    top_k=top_k
+                    )
             )
-        )
-
-        # Perform local search
-        print(
-            await rag.aquery(
-                "What are the top themes in this story?", param=QueryParam(mode="local")
-            )
-        )
-
-        # Perform global search
-        print(
-            await rag.aquery(
-                "What are the top themes in this story?",
-                param=QueryParam(mode="global"),
-            )
-        )
-
-        # Perform hybrid search
-        print(
-            await rag.aquery(
-                "What are the top themes in this story?",
-                param=QueryParam(mode="hybrid"),
-            )
-        )
+        print(answer)
+        
     except Exception as e:
         print(f"An error occurred: {e}")
 
-
-if __name__ == "__main__":
-    asyncio.run(main())
