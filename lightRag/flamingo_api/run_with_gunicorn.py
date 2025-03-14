@@ -7,7 +7,7 @@ import os
 import sys
 import signal
 import pipmaster as pm
-from lightrag.api.utils_api import parse_args, display_splash_screen
+from utils_api import parse_args, display_splash_screen
 from lightrag.kg.shared_storage import initialize_share_data, finalize_share_data
 from dotenv import load_dotenv
 
@@ -183,7 +183,7 @@ def main():
 
         def load(self):
             # Import the application
-            from lightrag.api.lightrag_server import get_application
+            from lightrag_server import get_application
 
             return get_application(args)
 

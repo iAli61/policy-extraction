@@ -16,7 +16,7 @@ from ascii_colors import ASCIIColors
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
-from lightrag.api.utils_api import (
+from utils_api import (
     get_api_key_dependency,
     parse_args,
     display_splash_screen,
@@ -24,13 +24,13 @@ from lightrag.api.utils_api import (
 from lightrag import LightRAG
 from lightrag.api import __api_version__
 from lightrag.utils import EmbeddingFunc
-from lightrag.api.routers.document_routes import (
+from routers.document_routes import (
     DocumentManager,
     create_document_routes,
     run_scanning_process,
 )
-from lightrag.api.routers.query_routes import create_query_routes
-from lightrag.api.routers.graph_routes import create_graph_routes
+from routers.query_routes import create_query_routes
+from routers.graph_routes import create_graph_routes
 
 from lightrag.utils import logger, set_verbose_debug
 from lightrag.kg.shared_storage import (
@@ -40,7 +40,7 @@ from lightrag.kg.shared_storage import (
     get_all_update_flags_status,
 )
 from fastapi.security import OAuth2PasswordRequestForm
-from .auth import auth_handler
+from auth import auth_handler
 
 from lightrag.types import GPTKeywordExtractionFormat
 
@@ -402,7 +402,7 @@ def configure_logging():
             },
             "filters": {
                 "path_filter": {
-                    "()": "lightrag.api.lightrag_server.LightragPathFilter",
+                    "()": "lightrag_server.LightragPathFilter",
                 },
             },
         }

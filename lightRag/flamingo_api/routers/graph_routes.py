@@ -5,7 +5,7 @@ This module contains all graph-related routes for the LightRAG API.
 from typing import Optional
 from fastapi import APIRouter, Depends
 
-from ..utils_api import get_api_key_dependency, get_auth_dependency
+from utils_api import get_api_key_dependency, get_auth_dependency
 
 router = APIRouter(tags=["graph"], dependencies=[Depends(get_auth_dependency())])
 

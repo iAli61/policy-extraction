@@ -65,12 +65,7 @@ async def flamingo_complete_if_cache(
 ) -> Union[str, AsyncIterator[str]]:
     if history_messages is None:
         history_messages = []
-    
-    # Set default headers similar to OpenAI client
-    default_headers = {
-        "User-Agent": f"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_8) LightRAG/{__api_version__}",
-        "Content-Type": "application/json",
-    }
+
     
     # Set Flamingo logger level to INFO when VERBOSE_DEBUG is off
     if not VERBOSE_DEBUG and logger.level == logging.DEBUG:

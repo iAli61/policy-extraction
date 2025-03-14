@@ -13,7 +13,7 @@ from fastapi import HTTPException, Security, Depends, Request
 from dotenv import load_dotenv
 from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
 from starlette.status import HTTP_403_FORBIDDEN
-from .auth import auth_handler
+from auth import auth_handler
 
 # Load environment variables
 load_dotenv(override=True)

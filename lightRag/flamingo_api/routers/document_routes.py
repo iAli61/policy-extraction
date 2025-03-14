@@ -16,7 +16,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from lightrag import LightRAG
 from lightrag.base import DocProcessingStatus, DocStatus
-from lightrag.api.utils_api import (
+from utils_api import (
     get_api_key_dependency,
     global_args,
     get_auth_dependency,

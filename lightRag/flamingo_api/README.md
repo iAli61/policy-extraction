@@ -106,7 +106,7 @@ For production deployments, it's recommended to use Gunicorn as the WSGI server 
 lightrag-gunicorn --workers 4
 
 # Alternatively, you can use the module directly
-python -m lightrag.api.run_with_gunicorn --workers 4
+python -m run_with_gunicorn --workers 4
 ```
 
 The `--workers` parameter is crucial for performance:
